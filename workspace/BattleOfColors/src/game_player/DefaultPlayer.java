@@ -45,11 +45,6 @@ public class DefaultPlayer implements Player {
 		return null;
 	}
 
-	@Override
-	public Collection<Colors> getAvailableColorsForPlayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 	
 }

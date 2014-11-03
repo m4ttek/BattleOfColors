@@ -43,11 +43,4 @@ public class AIPlayer implements Player {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public Collection<Colors> getAvailableColorsForPlayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -16,6 +16,4 @@ public interface Player {
 	public Integer getNumberOfFieldsTakenByPlayer();
 	
 	public Integer getPlayerOriginPlace();
-	
-	public Collection<Colors> getAvailableColorsForPlayer();
 }
