@@ -1,6 +1,7 @@
 package game_player;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 import game_table.GameTable;
@@ -19,6 +20,7 @@ public class DefaultPlayer implements Player {
 	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;
 		this.playerStartingPosition = playerStartingPosition;
+		takenFields = new ArrayList<Integer>();
 	}
 	
 	@Override
