@@ -2,6 +2,7 @@ package game_table;
 
 import game_utils.Colors;
 
+import java.awt.Point;
 import java.util.Collection;
 
 /**
@@ -18,4 +19,6 @@ public interface GameTable {
 	public int getTableHeight();
 	
 	public boolean checkIfGameFinished();
+	
+	public Collection<Point> getPlayersStartingPoints();
 }

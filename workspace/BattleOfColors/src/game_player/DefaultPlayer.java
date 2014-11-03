@@ -1,18 +1,24 @@
 package game_player;
 
+import java.awt.Point;
+import java.util.List;
+
 import game_table.GameTable;
 import game_utils.Colors;
-
-import java.awt.Color;
-import java.util.Collection;
 
 public class DefaultPlayer implements Player {
 
 	private final GameTable gameTable;
 
-	public DefaultPlayer(GameTable gameTable) {
+	private Colors currentPlayerColor;
+	
+	private List<Integer> takenFields;
+
+	private Point playerStartingPosition;
+	
+	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;
-		// TODO Auto-generated constructor stub
+		this.playerStartingPosition = playerStartingPosition;
 	}
 	
 	@Override
@@ -22,27 +28,23 @@ public class DefaultPlayer implements Player {
 	}
 
 	@Override
-	public void setChosenColor(Color chosenColor) {
-		// TODO Auto-generated method stub
-		
+	public void setChosenColor(Colors chosenColor) {
+		currentPlayerColor = chosenColor;
 	}
 
 	@Override
 	public Colors getPlayerColor() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentPlayerColor;
 	}
 
 	@Override
 	public Integer getNumberOfFieldsTakenByPlayer() {
-		// TODO Auto-generated method stub
-		return null;
+		return takenFields.size();
 	}
 
 	@Override
-	public Integer getPlayerOriginPlace() {
-		// TODO Auto-generated method stub
-		return null;
+	public Point getPlayerOriginPlace() {
+		return playerStartingPosition;
 	}
 
 

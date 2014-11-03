@@ -1,17 +1,18 @@
 package game_player;
 
+import java.awt.Point;
+
 import game_table.GameTable;
 import game_utils.Colors;
-
-import java.awt.Color;
-import java.util.Collection;
 
 public class AIPlayer implements Player {
 
 	private final GameTable gameTable;
+	private Point playerStartingPosition;
 
-	public AIPlayer(GameTable gameTable) {
+	public AIPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;
+		this.playerStartingPosition = playerStartingPosition;
 	}
 	
 	@Override
@@ -21,7 +22,7 @@ public class AIPlayer implements Player {
 	}
 
 	@Override
-	public void setChosenColor(Color chosenColor) {
+	public void setChosenColor(Colors chosenColor) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -39,7 +40,7 @@ public class AIPlayer implements Player {
 	}
 
 	@Override
-	public Integer getPlayerOriginPlace() {
+	public Point getPlayerOriginPlace() {
 		// TODO Auto-generated method stub
 		return null;
 	}
