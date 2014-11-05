@@ -4,6 +4,7 @@ import game_utils.Colors;
 
 import java.awt.Point;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interfejs dla stołów do gry.
@@ -21,4 +22,10 @@ public interface GameTable {
 	public boolean checkIfGameFinished();
 	
 	public Collection<Point> getPlayersStartingPoints();
+	
+	public List<Integer> makeHypotheticalMove(int playerId, Colors color);
+	
+	public void undoHypotheticalMove(int noOfMoves);
+	
+	public Collection<Colors> getHistoricalTable(int noOfMoves);
 }
