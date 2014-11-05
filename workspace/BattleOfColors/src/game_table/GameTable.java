@@ -28,4 +28,6 @@ public interface GameTable {
 	public void undoHypotheticalMove(int noOfMoves);
 	
 	public Collection<Colors> getHistoricalTable(int noOfMoves);
+	
+	public void acceptMove(int noOfMoves);
 }

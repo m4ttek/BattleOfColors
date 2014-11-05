@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -31,11 +32,14 @@ public class DefaultGameTable implements GameTable {
 	
 	List<Colors> tableRepresentation;
 	
+	List<List<Colors>> historicalTables;
+	
 	public DefaultGameTable(List<Point> playerPositions) {
 		if (playerPositions != null) {
 			this.playerPositions = playerPositions;
 		}
 		tableRepresentation = new ArrayList<Colors>();
+		historicalTables = new ArrayList<List<Colors>>();
 		generateTable();
 	}
 	
@@ -63,6 +67,44 @@ public class DefaultGameTable implements GameTable {
 		return playerPositions;
 	}
 
+	@Override
+	public List<Integer> makeHypotheticalMove(int playerId, Colors color) {
+		List<Colors> lastList = null;
+		if (historicalTables.size() != 0) {
+			lastList = historicalTables.get(historicalTables.size() - 1);
+		} else {
+			lastList = tableRepresentation;
+		}
+		List<Colors> newList = new ArrayList<Colors>();
+		Collections.copy(newList , lastList);
+		historicalTables.add(newList);
+		if ( playerId >= playerPositions.size()) {
+			return fillNewColor(newList, playerPositions.get(playerId), color);
+		}
+		throw new RuntimeException("makeHypotheticalMove: player with playerId = " + playerId + " does not exist!");
+	}
+
+	@Override
+	public void undoHypotheticalMove(int noOfMoves) {
+		if (noOfMoves > historicalTables.size()) {
+			throw new RuntimeException("undoHypothethicalMove: request for non-existing historical table");
+		}
+		historicalTables = historicalTables.subList(0, historicalTables.size() - noOfMoves);
+	}
+
+	@Override
+	public Collection<Colors> getHistoricalTable(int noOfMoves) {
+		if (noOfMoves > historicalTables.size()) {
+			throw new RuntimeException("getHistoricalTable: request for non-existing historical table");
+		}
+		return historicalTables.get(historicalTables.size() - noOfMoves - 1);
+	}
+	
+	@Override
+	public void acceptMove(int noOfMoves) {
+		// TODO Auto-generated method stub
+	}
+	
 	private void generateTable() {
 		Iterator<Point> pointIterator = playerPositions.iterator();
 		Point pos = pointIterator.next();
@@ -81,6 +123,11 @@ public class DefaultGameTable implements GameTable {
 				}
 			}
 		}
+	}
+	
+	protected List<Integer> fillNewColor(List<Colors> table, Point pos, Colors color) {
+		// TODO
+		return null;
 	}
 
 }
