@@ -13,21 +13,68 @@ import java.util.List;
  */
 public interface GameTable {
 
+	/**
+	 * Zwraca aktualną reprezentację stołu gry (nie historyczną).
+	 * 
+	 * @return kolekcja pól stołu
+	 */
 	public Collection<Colors> getCurrentTable();
 
+	/**
+	 * Zwraca szerokość stołu.
+	 * 
+	 * @return
+	 */
 	public int getTableWidth();
 	
+	/**
+	 * Zwraca wysokość stołu.
+	 * 
+	 * @return
+	 */
 	public int getTableHeight();
 	
+	/**
+	 * Sprawdza czy gra się zakończyła.
+	 * 
+	 * @return
+	 */
 	public boolean checkIfGameFinished();
 	
+	/**
+	 * Zwraca punkty startowe graczy.
+	 * 
+	 * @return
+	 */
 	public Collection<Point> getPlayersStartingPoints();
 	
-	public List<Integer> makeHypotheticalMove(int playerId, Colors color);
+	/**
+	 * Wykonuje hipotetyczny ruch dla gracza o danym ID.
+	 * 
+	 * @param playerId ID gracza
+	 * @param color nowy kolor wypełnienia
+	 * @return listę zajętych pól przez gracza
+	 */
+	public List<Integer> makeHypotheticalMove(Integer playerId, Colors color);
 	
+	/**
+	 * 
+	 * @param noOfMoves
+	 */
 	public void undoHypotheticalMove(int noOfMoves);
 	
+	/**
+	 * Dostarcza historyczny stół o podanej liczbie poprzednich ruchów.
+	 * 
+	 * @param noOfMoves liczba poprzednich ruchów
+	 * @return kolekcję pól reprezentujących tablicę
+	 */
 	public Collection<Colors> getHistoricalTable(int noOfMoves);
 	
+	/**
+	 * Zatwierdza wykonany ruch.
+	 * 
+	 * @param noOfMoves 
+	 */
 	public void acceptMove(int noOfMoves);
 }

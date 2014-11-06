@@ -68,7 +68,7 @@ public class DefaultGameTable implements GameTable {
 	}
 
 	@Override
-	public List<Integer> makeHypotheticalMove(int playerId, Colors color) {
+	public List<Integer> makeHypotheticalMove(Integer playerId, Colors color) {
 		List<Colors> lastList = null;
 		if (historicalTables.size() != 0) {
 			lastList = historicalTables.get(historicalTables.size() - 1);
@@ -78,7 +78,7 @@ public class DefaultGameTable implements GameTable {
 		List<Colors> newList = new ArrayList<Colors>();
 		Collections.copy(newList , lastList);
 		historicalTables.add(newList);
-		if ( playerId >= playerPositions.size()) {
+		if ( playerId < playerPositions.size()) {
 			return fillNewColor(newList, playerPositions.get(playerId), color);
 		}
 		throw new RuntimeException("makeHypotheticalMove: player with playerId = " + playerId + " does not exist!");
@@ -102,7 +102,11 @@ public class DefaultGameTable implements GameTable {
 	
 	@Override
 	public void acceptMove(int noOfMoves) {
-		// TODO Auto-generated method stub
+		if (noOfMoves > historicalTables.size()) {
+			throw new RuntimeException("acceptMove: request for non-existing historical table");
+		}
+		tableRepresentation = historicalTables.get(historicalTables.size() - noOfMoves - 1);
+		historicalTables = new ArrayList<List<Colors>>();
 	}
 	
 	private void generateTable() {
@@ -125,9 +129,53 @@ public class DefaultGameTable implements GameTable {
 		}
 	}
 	
+	/**
+	 * Metoda wypełnia nowym kolorem obszar zajety przez wskazany kolor.
+	 * 
+	 * @param table tablica do wykonania operacji
+	 * @param pos początkowa pozycja
+	 * @param color nowy kolor wypełnienia
+	 * @return lista pól zawierających nowy kolor
+	 */
 	protected List<Integer> fillNewColor(List<Colors> table, Point pos, Colors color) {
-		// TODO
-		return null;
+		final Integer originPosition = pos.x + pos.y * TABLE_WIDTH;
+		final Colors originColor = table.get(originPosition);
+		
+		if (originPosition < 0 || originPosition >= table.size()) {
+			throw new RuntimeException("fillNewColor: bad seed position: " + pos);
+		}
+		if (originColor == color) {
+			throw new RuntimeException("fillNewColor: filling with existing color: " + color);
+		}
+		
+		List<Integer> listOfExploredPositions = new ArrayList<Integer>();
+		List<Integer> listOfNonExploredPositions = new ArrayList<Integer>();
+		listOfNonExploredPositions.add(originPosition);
+		while (listOfNonExploredPositions.size() != 0) {
+			Integer exploredPos = listOfNonExploredPositions.remove(listOfNonExploredPositions.size() - 1);
+			
+			// zamalowanie pola
+			table.set(exploredPos, color);
+			
+			// sprawdzenie lewego pola
+			if (!(exploredPos % TABLE_WIDTH == 0) && table.get(exploredPos - 1) == originColor) {
+				listOfNonExploredPositions.add(exploredPos - 1);
+			}
+			// sprawdzenie prawego pola
+			if (!(exploredPos % TABLE_WIDTH == TABLE_WIDTH - 1) && table.get(exploredPos + 1) == originColor) {
+				listOfNonExploredPositions.add(exploredPos + 1);
+			}
+			// sprawdzenie dolnego pola
+			if (!(exploredPos + TABLE_WIDTH >= table.size()) && table.get(exploredPos + TABLE_WIDTH) == originColor) {
+				listOfNonExploredPositions.add(exploredPos + TABLE_WIDTH);
+			}
+			// sprawdzenie gornego pola
+			if (!(exploredPos - TABLE_WIDTH < 0) && table.get(exploredPos - TABLE_WIDTH) == originColor) {
+				listOfNonExploredPositions.add(exploredPos - TABLE_WIDTH);
+			}
+			listOfExploredPositions.add(exploredPos);
+		}
+		return listOfExploredPositions;
 	}
 
 }
