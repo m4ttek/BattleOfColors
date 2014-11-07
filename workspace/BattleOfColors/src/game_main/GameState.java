@@ -28,7 +28,9 @@ public class GameState {
 	
 	private GameTable gameTable;
 	
-	Player currentPlayer;
+	private Player currentPlayer;
+	
+	private int playerIdx;
 	
 	private GameState(List<PlayerType> players) {
 		gameTable = new DefaultGameTable(null);
@@ -45,7 +47,7 @@ public class GameState {
 				listOfPlayers.add(new DefaultPlayer(gameTable, playerPos));
 			}
 		}
-		currentPlayer = listOfPlayers.get(0);
+		currentPlayer = listOfPlayers.get(playerIdx++);
 	}
 	
 	public static GameState startGame(List<PlayerType> playerTypeList) {
@@ -60,10 +62,17 @@ public class GameState {
 		return GameState.startGame(playerTypeList);
 	}
 	
-	public void makeNextMove(String moveParameters) {
+	public void makeNextMove(String moveParameters) throws IncorrectColorException {
 		Colors chosenColor = Colors.valueOf(moveParameters);
+		if (!getAvailableColorsForCurrentPlayer().contains(chosenColor)) {
+			throw new IncorrectColorException(currentPlayer.getPlayerId(), chosenColor);
+		}
 		currentPlayer.setChosenColor(chosenColor);
 		currentPlayer.makeMove();
+		currentPlayer = listOfPlayers.get(playerIdx++);
+		if (playerIdx % listOfPlayers.size() == 0) {
+			playerIdx = 0;
+		}
 	}
 	
 	public boolean isGameFinished() {
@@ -118,5 +127,13 @@ public class GameState {
 			return listOfPlayers.indexOf(playerToWin);
 		}
 		return null;
+	}
+
+	public Integer getCurrentPlayerId() {
+		return currentPlayer.getPlayerId();
+	}
+
+	public Integer getCurrentPlayerTakenFieldsNumber() {
+		return currentPlayer.getNumberOfFieldsTakenByPlayer();
 	}
 }

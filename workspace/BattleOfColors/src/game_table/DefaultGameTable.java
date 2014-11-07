@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -18,9 +17,9 @@ import java.util.Random;
  */
 public class DefaultGameTable implements GameTable {
 
-	private static final Integer TABLE_WIDTH = 20;
+	private static final Integer TABLE_WIDTH = 10;
 	
-	private static final Integer TABLE_HEIGHT = 20;
+	private static final Integer TABLE_HEIGHT = 10;
 	
 	/**
 	 * Domyślny stół gry zawiera początkowe pozycje dla dwóch graczy.
@@ -75,8 +74,8 @@ public class DefaultGameTable implements GameTable {
 		} else {
 			lastList = tableRepresentation;
 		}
-		List<Colors> newList = new ArrayList<Colors>();
-		Collections.copy(newList , lastList);
+		List<Colors> newList = new ArrayList<Colors>(lastList);
+		
 		historicalTables.add(newList);
 		if ( playerId < playerPositions.size()) {
 			return fillNewColor(newList, playerPositions.get(playerId), color);
@@ -158,19 +157,21 @@ public class DefaultGameTable implements GameTable {
 			table.set(exploredPos, color);
 			
 			// sprawdzenie lewego pola
-			if (!(exploredPos % TABLE_WIDTH == 0) && table.get(exploredPos - 1) == originColor) {
+			if (!(exploredPos % TABLE_WIDTH == 0) && !listOfExploredPositions.contains(exploredPos - 1) &&
+					(table.get(exploredPos - 1) == originColor || table.get(exploredPos - 1) == color)) {
 				listOfNonExploredPositions.add(exploredPos - 1);
 			}
 			// sprawdzenie prawego pola
-			if (!(exploredPos % TABLE_WIDTH == TABLE_WIDTH - 1) && table.get(exploredPos + 1) == originColor) {
+			if (!(exploredPos % TABLE_WIDTH == TABLE_WIDTH - 1) && !listOfExploredPositions.contains(exploredPos + 1) 
+					&& (table.get(exploredPos + 1) == originColor || table.get(exploredPos + 1) == color)) {
 				listOfNonExploredPositions.add(exploredPos + 1);
 			}
 			// sprawdzenie dolnego pola
-			if (!(exploredPos + TABLE_WIDTH >= table.size()) && table.get(exploredPos + TABLE_WIDTH) == originColor) {
+			if (!(exploredPos + TABLE_WIDTH >= table.size()) && !listOfExploredPositions.contains(exploredPos + TABLE_WIDTH) && (table.get(exploredPos + TABLE_WIDTH) == originColor || table.get(exploredPos + TABLE_WIDTH) == color)) {
 				listOfNonExploredPositions.add(exploredPos + TABLE_WIDTH);
 			}
 			// sprawdzenie gornego pola
-			if (!(exploredPos - TABLE_WIDTH < 0) && table.get(exploredPos - TABLE_WIDTH) == originColor) {
+			if (!(exploredPos - TABLE_WIDTH < 0) && !listOfExploredPositions.contains(exploredPos - TABLE_WIDTH) && (table.get(exploredPos - TABLE_WIDTH) == originColor || table.get(exploredPos - TABLE_WIDTH) == color)) {
 				listOfNonExploredPositions.add(exploredPos - TABLE_WIDTH);
 			}
 			listOfExploredPositions.add(exploredPos);

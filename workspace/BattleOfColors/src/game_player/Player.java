@@ -15,4 +15,6 @@ public interface Player {
 	public Integer getNumberOfFieldsTakenByPlayer();
 	
 	public Point getPlayerOriginPlace();
+	
+	public Integer getPlayerId();
 }

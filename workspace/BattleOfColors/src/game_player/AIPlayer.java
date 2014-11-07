@@ -1,9 +1,8 @@
 package game_player;
 
-import java.awt.Point;
-
 import game_table.GameTable;
-import game_utils.Colors;
+
+import java.awt.Point;
 
 public class AIPlayer extends DefaultPlayer {
 
@@ -13,7 +12,6 @@ public class AIPlayer extends DefaultPlayer {
 
 	@Override
 	public void makeMove() {
-		// TODO Auto-generated method stub
 		
 	}
 }

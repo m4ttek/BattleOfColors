@@ -7,8 +7,15 @@ import java.util.List;
 import game_table.GameTable;
 import game_utils.Colors;
 
+/**
+ * Klasa reprezentująca podstawowego, domyślnego gracza - człowieka.
+ * 
+ * @author Mateusz Kamiński
+ */
 public class DefaultPlayer implements Player {
 
+	static int PLAYER_COUNT = 0;
+	
 	private final GameTable gameTable;
 
 	private Colors currentPlayerColor;
@@ -17,16 +24,20 @@ public class DefaultPlayer implements Player {
 
 	private Point playerStartingPosition;
 	
+	private Integer playerId;
+	
 	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;
 		this.playerStartingPosition = playerStartingPosition;
 		takenFields = new ArrayList<Integer>();
+		playerId = PLAYER_COUNT;
+		PLAYER_COUNT++;
 	}
 	
 	@Override
 	public void makeMove() {
-		// TODO Auto-generated method stub
-		
+		takenFields = gameTable.makeHypotheticalMove(playerId, currentPlayerColor);
+		gameTable.acceptMove(0);
 	}
 
 	@Override
@@ -48,7 +59,8 @@ public class DefaultPlayer implements Player {
 	public Point getPlayerOriginPlace() {
 		return playerStartingPosition;
 	}
-
-
 	
+	public Integer getPlayerId() {
+		return playerId;
+	}
 }

@@ -1,4 +1,5 @@
 import game_main.GameState;
+import game_main.IncorrectColorException;
 import game_utils.Colors;
 import game_utils.PlayerType;
 
@@ -14,16 +15,19 @@ import java.util.Scanner;
  */
 public class FakeServlet {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IncorrectColorException {
 		System.out.println("Battle of Colors\n");
 		
 		GameState gameState = GameState.startGame(Arrays.asList(PlayerType.HUMAN, PlayerType.HUMAN));
 		Scanner scanner = new Scanner(System.in);
 		while (!gameState.isGameFinished()) {
+			System.out.println("Gracz " + gameState.getCurrentPlayerId() + " posiada " + gameState.getCurrentPlayerTakenFieldsNumber() + " pól.");
 			drawGameTable(gameState.getCurrentTable(), gameState.getTableWidth());
+			
 			drawColorsForPlayer(gameState.getAvailableColorsForCurrentPlayer());
 			gameState.makeNextMove(scanner.nextLine());
 		}
+		System.out.println("Wygrał gracz o id: " + gameState.getWinner());
 		scanner.close();
 	}
 
