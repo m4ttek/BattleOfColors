@@ -63,6 +63,11 @@ public class GameState {
 	}
 	
 	public void makeNextMove(String moveParameters) throws IncorrectColorException {
+		// jeśli gra się zakończyła, nie wykonujemy już żadnego ruchu
+		if (isGameFinished()) {
+			return;
+		}
+		
 		Colors chosenColor = Colors.valueOf(moveParameters);
 		if (!getAvailableColorsForCurrentPlayer().contains(chosenColor)) {
 			throw new IncorrectColorException(currentPlayer.getPlayerId(), chosenColor);
@@ -77,6 +82,8 @@ public class GameState {
 	
 	public boolean isGameFinished() {
 		int fieldSum = 0;
+		
+		// Na początku wykonujemy proste sprawdzenie czy suma pól zajętych przez graczy równa się rozmiarowi stołu.
 		for (Player player : listOfPlayers) {
 			fieldSum += player.getNumberOfFieldsTakenByPlayer();
 		}
@@ -90,6 +97,11 @@ public class GameState {
 		return currentPlayer.getPlayerOriginPlace();
 	}
 	
+	/**
+	 * Zwraca listę dozwolonych kolorów dla gracza w danym ruchu.
+	 * 
+	 * @return lista kolorów
+	 */
 	public List<Colors> getAvailableColorsForCurrentPlayer() {
 		List<Colors> listOfAvailableColors = new ArrayList<Colors>();
 		Collections.addAll(listOfAvailableColors, Colors.values());
@@ -110,7 +122,7 @@ public class GameState {
 	}
 	
 	/**
-	 * Zwraca indeks zwyciezcy, jesli null - gra wciaz trwa.
+	 * Zwraca indeks zwyciężcy, jesli null - gra wciaz trwa.
 	 * 
 	 * @return indeks gracza lub null, jesli gra wciaz trwa
 	 */

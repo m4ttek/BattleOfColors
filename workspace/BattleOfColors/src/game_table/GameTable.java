@@ -64,7 +64,7 @@ public interface GameTable {
 	public void undoHypotheticalMove(int noOfMoves);
 	
 	/**
-	 * Dostarcza historyczny stół o podanej liczbie poprzednich ruchów.
+	 * Dostarcza historyczny stół na podstawie podanej liczbie poprzednich ruchów.
 	 * 
 	 * @param noOfMoves liczba poprzednich ruchów
 	 * @return kolekcję pól reprezentujących tablicę

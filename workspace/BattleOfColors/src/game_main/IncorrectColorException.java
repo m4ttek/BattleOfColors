@@ -3,6 +3,7 @@ package game_main;
 import game_utils.Colors;
 
 /**
+ * Wyjątek rzucany w przypadku wybrania niepoprawnego koloru przez gracza w trakcie jego ruchu.
  * 
  * @author Mateusz Kamiński
  */
