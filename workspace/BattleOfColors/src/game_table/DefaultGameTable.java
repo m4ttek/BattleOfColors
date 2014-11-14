@@ -19,75 +19,6 @@ import java.util.Set;
  * @author Mateusz Kamiński
  */
 public class DefaultGameTable implements GameTable {
-
-	protected static class ColorGroup {
-		private static int count;
-		private int uid;
-		private LinkedList<Point> fieldsInGroup;
-		
-		public ColorGroup(Point initialField) {
-			uid = ++count;
-			//System.out.println("Group " + uid + " created");
-			fieldsInGroup = new LinkedList<Point>();
-			fieldsInGroup.add(initialField);
-		}
-		
-		public void add(Point field) {
-			fieldsInGroup.add(field);
-		}
-		
-		private void clear() {
-			fieldsInGroup.clear();
-		}
-		
-		public int getUid() {
-			return uid;
-		}
-		
-		public static void resetCount() {
-			count = 0;
-		}
-		
-		public LinkedList<Point> getFieldsInGroup() {
-			return fieldsInGroup;
-		}
-		
-		public void join(ColorGroup colorGroup, ColorGroup[][] groups,
-				Set<ColorGroup> firstPlayerGroups, Set<ColorGroup> secondPlayerGroups ) {
-			for(Point field : colorGroup.fieldsInGroup) {
-				add(field);
-				groups[field.y][field.x] = this;
-			}
-			
-			boolean addThisGroup = false;
-			
-			for(ColorGroup group : firstPlayerGroups) {
-				if(group == colorGroup) {
-					addThisGroup = true;
-					break;
-				}
-			}
-			
-			if(addThisGroup) {
-				firstPlayerGroups.remove(colorGroup);
-				firstPlayerGroups.add(this);
-				addThisGroup = false;
-			}
-			
-			for(ColorGroup group : secondPlayerGroups) {
-				if(group == colorGroup) {
-					addThisGroup = true;
-					break;
-				}
-			}
-			
-			if(addThisGroup) {
-				secondPlayerGroups.remove(colorGroup);
-				secondPlayerGroups.add(this);
-			}
-			colorGroup.clear();
-		}
-	}
 	
 	private static final Integer TABLE_WIDTH = 10;
 	
@@ -204,8 +135,8 @@ public class DefaultGameTable implements GameTable {
 		}
 	}
 	
-	protected ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
-			ArrayList<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
+	private ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
+			List<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
 			Set<ColorGroup> secondPlayerGroups) {
 		
 		ColorGroup neighborGroup = null;
@@ -294,12 +225,12 @@ public class DefaultGameTable implements GameTable {
 		return false;
 	}
 	
-	protected List<Integer> takeInaccessibleFields(Colors playerColor) {
-		LinkedList<Integer> takenFields = new LinkedList<Integer>();
-		ArrayList<ColorGroup> colorGroups = new ArrayList<ColorGroup>();
+	protected List<Integer> findInaccessibleFields(Colors playerColor) {
+		List<Integer> takenFields = new LinkedList<Integer>();
+		List<ColorGroup> colorGroups = new LinkedList<ColorGroup>();
 		ColorGroup[][] groups = new ColorGroup[TABLE_HEIGHT][TABLE_WIDTH];
-		HashSet<ColorGroup> firstPlayerGroups = new HashSet<ColorGroup>();
-		HashSet<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
+		Set<ColorGroup> firstPlayerGroups = new HashSet<ColorGroup>();
+		Set<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
 		for(int i = 0; i < TABLE_HEIGHT; i++) {
 			for(int j = 0; j < TABLE_WIDTH; j++) {
 				if(isPlayerPos(0, i, j)) {
@@ -336,8 +267,8 @@ public class DefaultGameTable implements GameTable {
 			}
 		}
 		//System.out.println("First player groups: ");
-		HashSet<ColorGroup> currentPlayerGroups;
-		HashSet<ColorGroup> otherPlayerGroups;
+		Set<ColorGroup> currentPlayerGroups;
+		Set<ColorGroup> otherPlayerGroups;
 		Point playerPosition = playerPositions.get(0);
 		if(playerColor == getHistoricalTable(0).get(playerPosition.y*TABLE_WIDTH+playerPosition.x)) {
 			currentPlayerGroups = firstPlayerGroups;
@@ -427,9 +358,7 @@ public class DefaultGameTable implements GameTable {
 			
 			listOfExploredPositions.add(exploredPos);
 		}
-		for(Integer field : takeInaccessibleFields(color)) {
-			listOfExploredPositions.add(field);
-		}
+		listOfExploredPositions.addAll(findInaccessibleFields(color));
 		return listOfExploredPositions;
 	}
 
