@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -19,6 +20,75 @@ import java.util.Set;
  */
 public class DefaultGameTable implements GameTable {
 
+	protected static class ColorGroup {
+		private static int count;
+		private int uid;
+		private LinkedList<Point> fieldsInGroup;
+		
+		public ColorGroup(Point initialField) {
+			uid = ++count;
+			//System.out.println("Group " + uid + " created");
+			fieldsInGroup = new LinkedList<Point>();
+			fieldsInGroup.add(initialField);
+		}
+		
+		public void add(Point field) {
+			fieldsInGroup.add(field);
+		}
+		
+		private void clear() {
+			fieldsInGroup.clear();
+		}
+		
+		public int getUid() {
+			return uid;
+		}
+		
+		public static void resetCount() {
+			count = 0;
+		}
+		
+		public LinkedList<Point> getFieldsInGroup() {
+			return fieldsInGroup;
+		}
+		
+		public void join(ColorGroup colorGroup, ColorGroup[][] groups,
+				Set<ColorGroup> firstPlayerGroups, Set<ColorGroup> secondPlayerGroups ) {
+			for(Point field : colorGroup.fieldsInGroup) {
+				add(field);
+				groups[field.y][field.x] = this;
+			}
+			
+			boolean addThisGroup = false;
+			
+			for(ColorGroup group : firstPlayerGroups) {
+				if(group == colorGroup) {
+					addThisGroup = true;
+					break;
+				}
+			}
+			
+			if(addThisGroup) {
+				firstPlayerGroups.remove(colorGroup);
+				firstPlayerGroups.add(this);
+				addThisGroup = false;
+			}
+			
+			for(ColorGroup group : secondPlayerGroups) {
+				if(group == colorGroup) {
+					addThisGroup = true;
+					break;
+				}
+			}
+			
+			if(addThisGroup) {
+				secondPlayerGroups.remove(colorGroup);
+				secondPlayerGroups.add(this);
+			}
+			colorGroup.clear();
+		}
+	}
+	
 	private static final Integer TABLE_WIDTH = 10;
 	
 	private static final Integer TABLE_HEIGHT = 10;
@@ -28,6 +98,8 @@ public class DefaultGameTable implements GameTable {
 	 */
 	private List<Point> playerPositions = 
 			Arrays.asList(new Point(TABLE_WIDTH / 2, 0), new Point(TABLE_WIDTH / 2, TABLE_HEIGHT - 1));
+
+	private List<Point> fieldsTakenByPlayers;
 	
 	private static Random RAND = new Random();
 	
@@ -41,6 +113,8 @@ public class DefaultGameTable implements GameTable {
 		}
 		tableRepresentation = new ArrayList<Colors>();
 		historicalTables = new ArrayList<List<Colors>>();
+		fieldsTakenByPlayers =  new LinkedList<Point>();
+		fieldsTakenByPlayers.addAll(this.playerPositions);
 		generateTable();
 	}
 	
@@ -94,7 +168,7 @@ public class DefaultGameTable implements GameTable {
 	}
 
 	@Override
-	public Collection<Colors> getHistoricalTable(int noOfMoves) {
+	public List<Colors> getHistoricalTable(int noOfMoves) {
 		if (noOfMoves > historicalTables.size()) {
 			throw new RuntimeException("getHistoricalTable: request for non-existing historical table");
 		}
@@ -128,6 +202,171 @@ public class DefaultGameTable implements GameTable {
 				}
 			}
 		}
+	}
+	
+	protected ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
+			ArrayList<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
+			Set<ColorGroup> secondPlayerGroups) {
+		
+		ColorGroup neighborGroup = null;
+		
+		//check group on the left
+		if(posX != 0) {
+			neighborGroup = groups[posY][posX-1];
+		}
+		//check group on the top
+		if(posY != 0) {
+			if(neighborGroup != null && groups[posY-1][posX] != null &&
+					neighborGroup != groups[posY-1][posX]) {
+
+				//join groups
+				//System.out.println("Joining " + neighborGroup.getUid() + " and " + groups[posY-1][posX].getUid());
+				neighborGroup.join(groups[posY-1][posX], groups, firstPlayerGroups, secondPlayerGroups);
+			}
+			else if(neighborGroup == null) {
+				neighborGroup = groups[posY-1][posX];
+			}
+		}
+		
+		if(neighborGroup == null) {
+			neighborGroup = new ColorGroup(new Point(posX, posY));
+			List<Colors> currentTable = getHistoricalTable(0);
+			if(posY>0) {
+				//field on the top is player's
+				Point playerPosition = playerPositions.get(0);
+				if(currentTable.get((posY-1)*TABLE_WIDTH+posX) ==
+						currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x)) {
+					firstPlayerGroups.add(neighborGroup);
+					//System.out.println("At " + (posY-1) + " " + posX + " we have " +
+							//currentTable.get((posY-1)*TABLE_WIDTH+posX));
+					//System.out.println("And at " + posY + " " + posX + " we have " +
+							//currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x));
+					//System.out.println("Added group " + neighborGroup.getUid() + " to player oneY");
+				}
+				else {
+					secondPlayerGroups.add(neighborGroup);
+					//System.out.println("Added group " + neighborGroup.getUid() + " to player twoY");
+				}
+			}
+			if(posX>0) {
+				//field on the left is player's
+				Point playerPosition = playerPositions.get(1);
+				if(getHistoricalTable(0).get(posY*TABLE_WIDTH+posX-1) ==
+						currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x)) {
+					secondPlayerGroups.add(neighborGroup);
+					//System.out.println("Added group " + neighborGroup.getUid() + " to player twoX");
+				}
+				else {
+					firstPlayerGroups.add(neighborGroup);
+					//System.out.println("Added group " + neighborGroup.getUid() + " to player oneX");
+				}
+			}
+		}
+		else {
+			neighborGroup.add(new Point(posX, posY));
+		}
+		return neighborGroup;
+	}
+	
+	protected boolean isPlayerPos(int playerNo, int y, int x) {
+		for(Point p : fieldsTakenByPlayers) {
+			if(p.y == y && p.x == x) {
+				//System.out.println("Field " + p.y + " " + p.x + " is player's");
+				Point playerPosition;
+				if(playerNo == 0) {
+					playerPosition = playerPositions.get(0);
+					//System.out.println("first pos is " + playerPosition.y + " " + playerPosition.x);
+				}
+				else {
+					playerPosition = playerPositions.get(1);
+					//System.out.println("second pos is " + playerPosition.y + " " + playerPosition.x);
+				}
+				List<Colors> currentTable = getHistoricalTable(0);
+				if(currentTable.get(y*TABLE_WIDTH+x) ==
+						currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x)) {
+					//System.out.println("player " + playerNo + playerPosition.x + " " + playerPosition.y);
+					//System.out.println(currentTable.get(y*TABLE_WIDTH+x) + " " +
+							//currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	protected List<Integer> takeInaccessibleFields(Colors playerColor) {
+		LinkedList<Integer> takenFields = new LinkedList<Integer>();
+		ArrayList<ColorGroup> colorGroups = new ArrayList<ColorGroup>();
+		ColorGroup[][] groups = new ColorGroup[TABLE_HEIGHT][TABLE_WIDTH];
+		HashSet<ColorGroup> firstPlayerGroups = new HashSet<ColorGroup>();
+		HashSet<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
+		for(int i = 0; i < TABLE_HEIGHT; i++) {
+			for(int j = 0; j < TABLE_WIDTH; j++) {
+				if(isPlayerPos(0, i, j)) {
+					//check group on the left
+					if(j > 0 && groups[i][j-1] != null) {
+						firstPlayerGroups.add(groups[i][j-1]);
+						//System.out.println("Added " + groups[i][j-1].getUid() + "to player one");
+					}
+					//check group on the top
+					if(i > 0 && groups[i-1][j] != null) {
+						firstPlayerGroups.add(groups[i-1][j]);
+						//System.out.println("Added " + groups[i-1][j].getUid() + "to player one");
+					}
+				}
+				else if(isPlayerPos(1, i, j)) {
+					//check group on the left
+					if(j > 0 && groups[i][j-1] != null) {
+						secondPlayerGroups.add(groups[i][j-1]);
+						//System.out.println("Added " + groups[i][j-1].getUid() + "to player two");
+					}
+					//check group on the top
+					if(i > 0 && groups[i-1][j] != null) {
+						secondPlayerGroups.add(groups[i-1][j]);
+						//System.out.println("Added " + groups[i-1][j].getUid() + "to player two");
+					}
+				}
+				else {
+					groups[i][j] = getProperGroup(groups, i, j, colorGroups, firstPlayerGroups,
+							secondPlayerGroups);
+						//System.out.println(groups[0][6].getUid());
+						//System.out.println("Field " + i + " " + j + " was assigned to group " +
+							//groups[i][j].getUid());
+				}
+			}
+		}
+		//System.out.println("First player groups: ");
+		HashSet<ColorGroup> currentPlayerGroups;
+		HashSet<ColorGroup> otherPlayerGroups;
+		Point playerPosition = playerPositions.get(0);
+		if(playerColor == getHistoricalTable(0).get(playerPosition.y*TABLE_WIDTH+playerPosition.x)) {
+			currentPlayerGroups = firstPlayerGroups;
+			otherPlayerGroups = secondPlayerGroups;
+		}
+		else {
+			currentPlayerGroups = secondPlayerGroups;
+			otherPlayerGroups = firstPlayerGroups;
+		}
+		
+		for(ColorGroup cg : currentPlayerGroups) {
+			//System.out.println(cg.getUid());
+			if(otherPlayerGroups.contains(cg)) {
+				//System.out.println("Second player also has the group no. " + cg.getUid());
+			}
+			else {
+				//System.out.println("Second player doesn't have group no. " + cg.getUid());
+				//add additional fields to player's fields
+				for(Point field : cg.getFieldsInGroup()) {
+					List<Colors> table = getHistoricalTable(0);
+					table.set(field.y*TABLE_WIDTH+field.x, playerColor);
+					takenFields.add(field.y*TABLE_WIDTH+field.x);
+					//System.out.println("Field " + field.y + " " + field.x + " set to color " +
+							//playerColor);
+				}
+			}
+		}
+		ColorGroup.resetCount();
+		return takenFields;
 	}
 	
 	/**
@@ -179,7 +418,17 @@ public class DefaultGameTable implements GameTable {
 			// zamalowanie pola
 			table.set(exploredPos, color);
 			
+			//System.out.println("Set " + exploredPos + " to " + color);
+			//System.out.println("Set to " + getHistoricalTable(0).get(exploredPos));
+			if(getHistoricalTable(0).get(exploredPos) != Colors.BLACK) {
+				fieldsTakenByPlayers.add(new Point(exploredPos%TABLE_WIDTH, exploredPos/TABLE_WIDTH));
+				//System.out.println("Player took field " + exploredPos/TABLE_WIDTH + " " + exploredPos%TABLE_WIDTH);
+			}
+			
 			listOfExploredPositions.add(exploredPos);
+		}
+		for(Integer field : takeInaccessibleFields(color)) {
+			listOfExploredPositions.add(field);
 		}
 		return listOfExploredPositions;
 	}
