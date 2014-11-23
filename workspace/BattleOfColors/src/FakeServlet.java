@@ -14,21 +14,32 @@ import java.util.Scanner;
  * @author Mateusz Kamiński
  */
 public class FakeServlet {
+
+	private static final PlayerType[] playerTypes = { PlayerType.HUMAN, PlayerType.HUMAN};
 	
 	public static void main(String[] args) throws IncorrectColorException {
 		System.out.println("Battle of Colors\n");
-		
-		GameState gameState = GameState.startGame(Arrays.asList(PlayerType.HUMAN, PlayerType.HUMAN));
+		GameState gameState = GameState.startGame(Arrays.asList(playerTypes[0], playerTypes[1]));
+		gameState.setPlayerDifficultyLevel(0, 3);
+		gameState.setPlayerDifficultyLevel(1, 4);
 		Scanner scanner = new Scanner(System.in);
 		while (!gameState.isGameFinished()) {
 			System.out.println("Gracz " + gameState.getCurrentPlayerId() + " posiada " + gameState.getCurrentPlayerTakenFieldsNumber() + " pól.");
 			drawGameTable(gameState.getCurrentTable(), gameState.getTableWidth());
-			
-			drawColorsForPlayer(gameState.getAvailableColorsForCurrentPlayer());
-			gameState.makeNextMove(scanner.nextLine());
+			if(playerTypes[gameState.getCurrentPlayerId()] == PlayerType.HUMAN) {
+				System.out.println("Human move, player no. " + gameState.getCurrentPlayerId());
+				drawColorsForPlayer(gameState.getAvailableColorsForCurrentPlayer());
+				gameState.makeNextMove(scanner.nextLine());
+			}
+			else {
+				//activate line below to stop after each move in AI-AI game
+				//scanner.nextLine();
+				gameState.makeNextMove(null);
+			}
 		}
 		System.out.println("Wygrał gracz o id: " + gameState.getWinner());
 		scanner.close();
+		System.exit(gameState.getWinner());
 	}
 
 	private static void drawColorsForPlayer(List<Colors> availableColorsForCurrentPlayer) {

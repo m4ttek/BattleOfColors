@@ -16,15 +16,15 @@ public class DefaultPlayer implements Player {
 
 	static int PLAYER_COUNT = 0;
 	
-	private final GameTable gameTable;
+	protected final GameTable gameTable;
 
-	private Colors currentPlayerColor;
+	protected Colors currentPlayerColor;
 	
-	private List<Integer> takenFields;
+	protected List<Integer> takenFields;
 
 	private Point playerStartingPosition;
 	
-	private Integer playerId;
+	protected Integer playerId;
 	
 	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;

@@ -30,7 +30,7 @@ public class DefaultGameTable implements GameTable {
 	private List<Point> playerPositions = 
 			Arrays.asList(new Point(TABLE_WIDTH / 2, 0), new Point(TABLE_WIDTH / 2, TABLE_HEIGHT - 1));
 
-	private List<Point> fieldsTakenByPlayers;
+	private Set<Point> fieldsTakenByPlayers;
 	
 	private static Random RAND = new Random();
 	
@@ -38,13 +38,16 @@ public class DefaultGameTable implements GameTable {
 	
 	List<List<Colors>> historicalTables;
 	
+	protected List<Set<Point>> historicalTakenFields;
+	
 	public DefaultGameTable(List<Point> playerPositions) {
 		if (playerPositions != null) {
 			this.playerPositions = playerPositions;
 		}
 		tableRepresentation = new ArrayList<Colors>();
 		historicalTables = new ArrayList<List<Colors>>();
-		fieldsTakenByPlayers =  new LinkedList<Point>();
+		historicalTakenFields = new ArrayList<Set<Point>>();
+		fieldsTakenByPlayers =  new HashSet<Point>();
 		fieldsTakenByPlayers.addAll(this.playerPositions);
 		generateTable();
 	}
@@ -76,14 +79,21 @@ public class DefaultGameTable implements GameTable {
 	@Override
 	public List<Integer> makeHypotheticalMove(Integer playerId, Colors color) {
 		List<Colors> lastList = null;
+		Set<Point> lastFieldsTaken = null;
 		if (historicalTables.size() != 0) {
 			lastList = historicalTables.get(historicalTables.size() - 1);
+			lastFieldsTaken = historicalTakenFields.get(historicalTakenFields.size() - 1);
 		} else {
 			lastList = tableRepresentation;
+			lastFieldsTaken = fieldsTakenByPlayers;
 		}
+		
 		List<Colors> newList = new ArrayList<Colors>(lastList);
+		Set<Point> newFieldsTaken = new HashSet<Point>(lastFieldsTaken);
 		
 		historicalTables.add(newList);
+		historicalTakenFields.add(newFieldsTaken);
+		
 		if ( playerId < playerPositions.size()) {
 			return fillNewColor(newList, playerPositions.get(playerId), color);
 		}
@@ -96,6 +106,7 @@ public class DefaultGameTable implements GameTable {
 			throw new RuntimeException("undoHypothethicalMove: request for non-existing historical table");
 		}
 		historicalTables = historicalTables.subList(0, historicalTables.size() - noOfMoves);
+		historicalTakenFields = historicalTakenFields.subList(0, historicalTakenFields.size() - noOfMoves);
 	}
 
 	@Override
@@ -104,6 +115,10 @@ public class DefaultGameTable implements GameTable {
 			throw new RuntimeException("getHistoricalTable: request for non-existing historical table");
 		}
 		return historicalTables.get(historicalTables.size() - noOfMoves - 1);
+	}
+	
+	protected Set<Point> getHistoricalTakenFields(int noOfMoves) {
+		return historicalTakenFields.get(historicalTakenFields.size()-1-noOfMoves);
 	}
 	
 	@Override
@@ -118,6 +133,7 @@ public class DefaultGameTable implements GameTable {
 	private void generateTable() {
 		Iterator<Point> pointIterator = playerPositions.iterator();
 		Point pos = pointIterator.next();
+		//RAND.setSeed(123);
 		for (int y = 0; y < TABLE_HEIGHT; y++) {
 			for (int x = 0; x < TABLE_WIDTH; x++) {
 				// dodajemy poczatkowe pozycje graczy
@@ -200,7 +216,7 @@ public class DefaultGameTable implements GameTable {
 	}
 	
 	protected boolean isPlayerPos(int playerNo, int y, int x) {
-		for(Point p : fieldsTakenByPlayers) {
+		for(Point p : getHistoricalTakenFields(0)) {
 			if(p.y == y && p.x == x) {
 				//System.out.println("Field " + p.y + " " + p.x + " is player's");
 				Point playerPosition;
@@ -218,14 +234,18 @@ public class DefaultGameTable implements GameTable {
 					//System.out.println("player " + playerNo + playerPosition.x + " " + playerPosition.y);
 					//System.out.println(currentTable.get(y*TABLE_WIDTH+x) + " " +
 							//currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x));
+					////System.out.println("Took " + (//System.nanoTime()-start) + " nanoseconds");
 					return true;
 				}
 			}
 		}
+		////System.out.println("Took " + (//System.nanoTime()-start) + " nanoseconds");
 		return false;
 	}
 	
 	protected List<Integer> findInaccessibleFields(Colors playerColor) {
+		//System.out.println("Call no. " + tempCalls++);
+
 		List<Integer> takenFields = new LinkedList<Integer>();
 		List<ColorGroup> colorGroups = new LinkedList<ColorGroup>();
 		ColorGroup[][] groups = new ColorGroup[TABLE_HEIGHT][TABLE_WIDTH];
@@ -260,7 +280,6 @@ public class DefaultGameTable implements GameTable {
 				else {
 					groups[i][j] = getProperGroup(groups, i, j, colorGroups, firstPlayerGroups,
 							secondPlayerGroups);
-						//System.out.println(groups[0][6].getUid());
 						//System.out.println("Field " + i + " " + j + " was assigned to group " +
 							//groups[i][j].getUid());
 				}
@@ -297,6 +316,7 @@ public class DefaultGameTable implements GameTable {
 			}
 		}
 		ColorGroup.resetCount();
+		//System.out.println("End of Call no. " + (tempCalls-1));
 		return takenFields;
 	}
 	
@@ -348,17 +368,14 @@ public class DefaultGameTable implements GameTable {
 			}
 			// zamalowanie pola
 			table.set(exploredPos, color);
-			
-			//System.out.println("Set " + exploredPos + " to " + color);
-			//System.out.println("Set to " + getHistoricalTable(0).get(exploredPos));
 			if(getHistoricalTable(0).get(exploredPos) != Colors.BLACK) {
-				fieldsTakenByPlayers.add(new Point(exploredPos%TABLE_WIDTH, exploredPos/TABLE_WIDTH));
-				//System.out.println("Player took field " + exploredPos/TABLE_WIDTH + " " + exploredPos%TABLE_WIDTH);
+				getHistoricalTakenFields(0).add(new Point(exploredPos%TABLE_WIDTH, exploredPos/TABLE_WIDTH));
 			}
 			
 			listOfExploredPositions.add(exploredPos);
 		}
-		listOfExploredPositions.addAll(findInaccessibleFields(color));
+			List<Integer> temp = findInaccessibleFields(color);
+			listOfExploredPositions.addAll(temp);
 		return listOfExploredPositions;
 	}
 

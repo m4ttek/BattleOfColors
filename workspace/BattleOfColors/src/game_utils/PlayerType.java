@@ -7,5 +7,6 @@ package game_utils;
  */
 public enum PlayerType {
 	HUMAN,
-	AI
+	AI_MIN_MAX,
+	AI_ALFA_BETA
 }

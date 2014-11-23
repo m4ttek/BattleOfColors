@@ -1,6 +1,7 @@
 package game_main;
 
 import game_player.AIPlayer;
+import game_player.AIPlayerMinMax;
 import game_player.DefaultPlayer;
 import game_player.Player;
 import game_table.DefaultGameTable;
@@ -39,15 +40,33 @@ public class GameState {
 		Collection<Point> playersStartingPoints = gameTable.getPlayersStartingPoints();
 		Iterator<Point> iterator = playersStartingPoints.iterator();
 		
+		int playerNo = 0;
 		for (PlayerType playerType : players) {
 			Point playerPos = iterator.next();
-			if (playerType.equals(PlayerType.AI)) {
-				listOfPlayers.add(new AIPlayer(gameTable, playerPos));
+			if (playerType.equals(PlayerType.AI_MIN_MAX)) {
+				if(listOfPlayers.isEmpty()) {
+					listOfPlayers.add(new AIPlayerMinMax(gameTable, playerPos, this, playerNo+1, 4));
+				}
+				else {
+					listOfPlayers.add(new AIPlayerMinMax(gameTable, playerPos, this, playerNo-1, 4));
+				}
 			} else if (playerType.equals(PlayerType.HUMAN)) {
 				listOfPlayers.add(new DefaultPlayer(gameTable, playerPos));
 			}
+			playerNo++;
 		}
 		currentPlayer = listOfPlayers.get(playerIdx++);
+	}
+	
+	public void setPlayerDifficultyLevel(int playerId, int level) {
+		for(Player player : listOfPlayers) {
+			if(player.getPlayerId() == playerId) {
+				if(player instanceof AIPlayer) {
+					((AIPlayer) player).setDifficultyLevel(level);
+				}
+				return;
+			}
+		}
 	}
 	
 	public static GameState startGame(List<PlayerType> playerTypeList) {
@@ -68,15 +87,26 @@ public class GameState {
 			return;
 		}
 		
-		Colors chosenColor = Colors.valueOf(moveParameters);
-		if (!getAvailableColorsForCurrentPlayer().contains(chosenColor)) {
-			throw new IncorrectColorException(currentPlayer.getPlayerId(), chosenColor);
+		if(moveParameters != null) {
+			Colors chosenColor = Colors.valueOf(moveParameters);
+			if (!getAvailableColorsForCurrentPlayer().contains(chosenColor)) {
+				throw new IncorrectColorException(currentPlayer.getPlayerId(), chosenColor);
+			}
+			currentPlayer.setChosenColor(chosenColor);
 		}
-		currentPlayer.setChosenColor(chosenColor);
-		currentPlayer.makeMove();
+			currentPlayer.makeMove();
 		currentPlayer = listOfPlayers.get(playerIdx++);
 		if (playerIdx % listOfPlayers.size() == 0) {
 			playerIdx = 0;
+		}
+	}
+	
+	public Colors getOtherPlayersColor(Integer playerId) {
+		if(listOfPlayers.get(0).getPlayerId() == playerId) {
+			return listOfPlayers.get(1).getPlayerColor();
+		}
+		else {
+			return listOfPlayers.get(0).getPlayerColor();
 		}
 	}
 	
