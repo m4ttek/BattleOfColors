@@ -49,7 +49,7 @@ public class AIPlayerMinMax extends AIPlayer {
 		for(Colors color : availableColors) {
 			int moveValue = minMaxEvaluateMove(color, 0, availableColors, 0, 0, currentPlayerColor,
 					opponentsColor);
-			System.out.println(color + " would give me " + moveValue + " points.");
+			//System.out.println(color + " would give me " + moveValue + " points.");
 			if(moveValue > bestResult) {
 				bestChoice = color;
 				bestResult = moveValue;
