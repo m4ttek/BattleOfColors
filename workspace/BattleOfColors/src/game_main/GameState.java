@@ -33,8 +33,10 @@ public class GameState {
 	
 	private int playerIdx;
 	
-	private GameState(List<PlayerType> players) {
-		gameTable = new DefaultGameTable(null);
+	private int turn=0;
+	
+	private GameState(List<PlayerType> players,int size) {
+		gameTable = new DefaultGameTable(null,size);
 		listOfPlayers = new ArrayList<Player>();
 		
 		Collection<Point> playersStartingPoints = gameTable.getPlayersStartingPoints();
@@ -56,6 +58,7 @@ public class GameState {
 			playerNo++;
 		}
 		currentPlayer = listOfPlayers.get(playerIdx++);
+		turn=1;
 	}
 	
 	public void setPlayerDifficultyLevel(int playerId, int level) {
@@ -69,16 +72,17 @@ public class GameState {
 		}
 	}
 	
-	public static GameState startGame(List<PlayerType> playerTypeList) {
+	public static GameState startGame(List<PlayerType> playerTypeList,int size) {
 		if (gameState == null) {
-			gameState = new GameState(playerTypeList);
+			gameState = new GameState(playerTypeList,size);
 		}
 		return gameState;
 	}
 	
-	public static GameState restartGame(List<PlayerType> playerTypeList) {
+	public static GameState restartGame(List<PlayerType> playerTypeList,int size) {
 		gameState = null;
-		return GameState.startGame(playerTypeList);
+		DefaultPlayer.reset();
+		return GameState.startGame(playerTypeList,size);
 	}
 	
 	public void makeNextMove(String moveParameters) throws IncorrectColorException {
@@ -94,7 +98,7 @@ public class GameState {
 			}
 			currentPlayer.setChosenColor(chosenColor);
 		}
-			currentPlayer.makeMove();
+		currentPlayer.makeMove();
 		currentPlayer = listOfPlayers.get(playerIdx++);
 		if (playerIdx % listOfPlayers.size() == 0) {
 			playerIdx = 0;
@@ -146,9 +150,14 @@ public class GameState {
 	public Collection<Colors> getCurrentTable() {
 		return gameTable.getCurrentTable();
 	}
-
+	public int getTurn() {
+		return turn;
+	}
 	public int getTableWidth() {
 		return gameTable.getTableWidth();
+	}
+	public int getTableHeight() {
+		return gameTable.getTableHeight();
 	}
 	
 	/**
@@ -174,8 +183,29 @@ public class GameState {
 	public Integer getCurrentPlayerId() {
 		return currentPlayer.getPlayerId();
 	}
+	public Integer getPreviousPlayerId() {
+		return listOfPlayers.get(playerIdx).getPlayerId();
+	}
 
 	public Integer getCurrentPlayerTakenFieldsNumber() {
 		return currentPlayer.getNumberOfFieldsTakenByPlayer();
+	}
+	public Integer getPreviousPlayerTakenFieldsNumber() {
+		return listOfPlayers.get(playerIdx).getNumberOfFieldsTakenByPlayer();
+	}
+	public Integer getPlayerTakenFieldsNumber(int id) {
+		return listOfPlayers.get(id).getNumberOfFieldsTakenByPlayer();
+	}
+	/**
+	 * Zwraca typ aktualnego gracza
+	 * 
+	 * @return typ aktualnego gracza
+	 */
+	public PlayerType getCurrentPlayerType() {
+		if(currentPlayer instanceof AIPlayerMinMax){
+			return PlayerType.AI_MIN_MAX;
+		}
+		else
+			return PlayerType.HUMAN;
 	}
 }

@@ -77,4 +77,5 @@ public interface GameTable {
 	 * @param noOfMoves 
 	 */
 	public void acceptMove(int noOfMoves);
+
 }

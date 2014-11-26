@@ -1,0 +1,115 @@
+/* wyzerowanie domyslnych wartosci */
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, img, ins, kbd, q, s, samp, small, strike, strong, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent;}
+body {line-height: 1;}
+ol, ul {list-style: none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after, q:before, q:after {content: ''; content: none;}
+table {border-collapse: collapse; border-spacing: 0;}
+hr {display: none;}
+img {display: block; border: 0;}
+
+body {
+background: #f1eaea;
+font: 12px  'Pontano Sans', verdana, tahoma, arial, sans-serif; 
+color: #c6a5a5;
+}
+div {
+    position: relative;
+}
+.container {
+width:1000px;
+margin: 0 auto;
+overflow: hidden;
+}
+a {
+font: 12px  'Pontano Sans',tahoma, arial, sans-serif; 
+text-decoration: none;
+color: #4bb3cd;
+}
+a:visited {
+}
+a:hover {
+color:#dec834;
+-webkit-transition: all 300ms ease;
+-moz-transition: all 300ms ease;
+-ms-transition: all 300ms ease;
+-o-transition: all 300ms ease;
+transition: all 300ms ease;
+}
+a:active{
+}
+
+#bg {
+  min-height: 100%;
+  min-width: 1024px;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#header #title {
+display: block;
+width: 560px;
+height: 257px;
+margin: 0 140px;
+background: url(images/header.png) no-repeat;
+text-indent: -666em;
+}
+#content a.back {
+	display:block;
+	text-align:center;
+	padding:10px 0;
+    border: none;
+    box-shadow: none;
+    background: #ec313e;
+    font-family:'Tahoma';
+	font-size:18px;
+	font-weight:thin;
+	color:#fff;
+	cursor:pointer;
+	border-radius: 8px;
+	float:left;
+	margin:5px 10px;
+	width:180px;
+	height:25px;
+}
+#content a.back:hover {
+	-webkit-box-shadow: inset 0px 0px 16px -0px rgba(0,0,0,0.36);
+	-moz-box-shadow: inset 0px 0px 16px -0px rgba(0,0,0,0.36);
+	box-shadow: inset 0px 0px 16px -0px rgba(0,0,0,0.36);
+	-webkit-transition: all 300ms ease;
+	-moz-transition: all 300ms ease;
+	-ms-transition: all 300ms ease;
+	-o-transition: all 300ms ease;
+	transition: all 300ms ease;
+}
+#content h1 {
+	font-family:'Shadows Into Light';
+	font-size:50px;
+	font-weight:bold;
+	color:#4cb82f;
+}
+#content h2 {
+	font-family:'Tahoma';
+	font-size:20px;
+	font-weight:normal;
+	color:#48add8;
+}
+#content ul {
+	display:block;
+	margin-left:40%;
+	margin-top:100px;
+}
+#content ul li a {
+	font-family:'Shadows Into Light';
+	font-size:50px;
+	font-weight:bold;
+}
+
+#foot img {
+position:fixed;
+bottom:0px;
+left:27%;
+}

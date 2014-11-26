@@ -33,7 +33,9 @@ public class DefaultPlayer implements Player {
 		playerId = PLAYER_COUNT;
 		PLAYER_COUNT++;
 	}
-	
+	static public void reset(){
+		PLAYER_COUNT = 0;
+	}
 	@Override
 	public void makeMove() {
 		takenFields = gameTable.makeHypotheticalMove(playerId, currentPlayerColor);
