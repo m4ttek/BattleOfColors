@@ -1,6 +1,5 @@
 package controller;
 
-import game_main.GameInfo;
 import game_main.GameState;
 import game_main.IncorrectColorException;
 import game_player.DefaultPlayer;
