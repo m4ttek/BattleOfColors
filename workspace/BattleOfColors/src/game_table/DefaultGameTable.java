@@ -217,27 +217,26 @@ public class DefaultGameTable implements GameTable {
 	}
 	
 	protected boolean isPlayerPos(int playerNo, int y, int x) {
-		for(Point p : getHistoricalTakenFields(0)) {
-			if(p.y == y && p.x == x) {
-				//System.out.println("Field " + p.y + " " + p.x + " is player's");
-				Point playerPosition;
-				if(playerNo == 0) {
-					playerPosition = playerPositions.get(0);
-					//System.out.println("first pos is " + playerPosition.y + " " + playerPosition.x);
-				}
-				else {
-					playerPosition = playerPositions.get(1);
-					//System.out.println("second pos is " + playerPosition.y + " " + playerPosition.x);
-				}
-				List<Colors> currentTable = getHistoricalTable(0);
-				if(currentTable.get(y*table_width+x) ==
-						currentTable.get(playerPosition.y*table_width+playerPosition.x)) {
-					//System.out.println("player " + playerNo + playerPosition.x + " " + playerPosition.y);
-					//System.out.println(currentTable.get(y*TABLE_WIDTH+x) + " " +
-							//currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x));
-					////System.out.println("Took " + (//System.nanoTime()-start) + " nanoseconds");
-					return true;
-				}
+		Point p = new Point(x,y);
+		if(getHistoricalTakenFields(0).contains(p)) {
+			//System.out.println("Field " + p.y + " " + p.x + " is player's");
+			Point playerPosition;
+			if(playerNo == 0) {
+				playerPosition = playerPositions.get(0);
+				//System.out.println("first pos is " + playerPosition.y + " " + playerPosition.x);
+			}
+			else {
+				playerPosition = playerPositions.get(1);
+				//System.out.println("second pos is " + playerPosition.y + " " + playerPosition.x);
+			}
+			List<Colors> currentTable = getHistoricalTable(0);
+			if(currentTable.get(y*table_width+x) ==
+					currentTable.get(playerPosition.y*table_width+playerPosition.x)) {
+				//System.out.println("player " + playerNo + playerPosition.x + " " + playerPosition.y);
+				//System.out.println(currentTable.get(y*TABLE_WIDTH+x) + " " +
+						//currentTable.get(playerPosition.y*TABLE_WIDTH+playerPosition.x));
+				////System.out.println("Took " + (//System.nanoTime()-start) + " nanoseconds");
+				return true;
 			}
 		}
 		////System.out.println("Took " + (//System.nanoTime()-start) + " nanoseconds");
