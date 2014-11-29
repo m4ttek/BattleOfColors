@@ -7,6 +7,7 @@ import game_player.Player;
 import game_table.DefaultGameTable;
 import game_table.GameTable;
 import game_utils.Colors;
+import game_utils.GameAction;
 import game_utils.PlayerType;
 
 import java.awt.Point;
@@ -23,7 +24,9 @@ import java.util.List;
  */
 public class GameState {
 	
-	private static GameState gameState;
+	private GameAction gameAction=GameAction.LOAD;
+	
+	//private static GameState gameState;
 
 	private List<Player> listOfPlayers;
 	
@@ -34,6 +37,8 @@ public class GameState {
 	private int playerIdx;
 	
 	private int turn=0;
+
+	private boolean restart=false;
 	
 	private GameState(List<PlayerType> players,int size) {
 		gameTable = new DefaultGameTable(null,size);
@@ -73,15 +78,16 @@ public class GameState {
 	}
 	
 	public static GameState startGame(List<PlayerType> playerTypeList,int size) {
-		if (gameState == null) {
+		/*if (gameState == null) {
 			gameState = new GameState(playerTypeList,size);
 		}
-		return gameState;
+		return gameState;*/
+		DefaultPlayer.reset();
+		return new GameState(playerTypeList,size);
 	}
 	
 	public static GameState restartGame(List<PlayerType> playerTypeList,int size) {
-		gameState = null;
-		DefaultPlayer.reset();
+		//gameState = null;
 		return GameState.startGame(playerTypeList,size);
 	}
 	
@@ -207,5 +213,21 @@ public class GameState {
 		}
 		else
 			return PlayerType.HUMAN;
+	}
+
+	public GameAction getGameAction() {
+		return gameAction;
+	}
+
+	public void setGameAction(GameAction gameAction) {
+		this.gameAction = gameAction;
+	}
+
+	public boolean isRestart() {
+		return restart;
+	}
+
+	public void setRestart(boolean restart) {
+		this.restart = restart;
 	}
 }
