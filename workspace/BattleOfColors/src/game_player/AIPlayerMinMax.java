@@ -42,7 +42,7 @@ public class AIPlayerMinMax extends AIPlayer {
 	@Override
 	public void makeMove() {
 		opponentsColor = gameState.getOtherPlayersColor(playerId);
-		System.out.println("Other player's color is " + opponentsColor);
+		//System.out.println("Other player's color is " + opponentsColor);
 		List<Colors> availableColors = gameState.getAvailableColorsForCurrentPlayer();
 		int bestResult = Integer.MIN_VALUE;
 		Colors bestChoice = Colors.BLACK;

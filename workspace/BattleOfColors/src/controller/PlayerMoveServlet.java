@@ -2,20 +2,14 @@ package controller;
 
 import game_main.GameState;
 import game_main.IncorrectColorException;
-import game_player.DefaultPlayer;
-import game_player.Player;
 import game_utils.Colors;
 import game_utils.GameAction;
 import game_utils.PlayerType;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

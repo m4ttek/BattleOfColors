@@ -106,8 +106,8 @@ public class DefaultGameTable implements GameTable {
 		if (noOfMoves > historicalTables.size()) {
 			throw new RuntimeException("undoHypothethicalMove: request for non-existing historical table");
 		}
-		historicalTables = new ArrayList(historicalTables.subList(0, historicalTables.size() - noOfMoves));
-		historicalTakenFields = new ArrayList(historicalTakenFields.subList(0, historicalTakenFields.size() - noOfMoves));
+		historicalTables = new ArrayList<>(historicalTables.subList(0, historicalTables.size() - noOfMoves));
+		historicalTakenFields = new ArrayList<>(historicalTakenFields.subList(0, historicalTakenFields.size() - noOfMoves));
 	}
 
 	@Override

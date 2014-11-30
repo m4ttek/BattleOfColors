@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+
 /**
  * Klasa testująca grę.
  * 
@@ -18,8 +19,7 @@ public class FakeServlet {
 	private static final PlayerType[] playerTypes = { PlayerType.HUMAN, PlayerType.HUMAN};
 	
 	public static void main(String[] args) throws IncorrectColorException {
-		System.out.println("Battle of Colors\n");
-		GameState gameState = GameState.startGame(Arrays.asList(playerTypes[0], playerTypes[1]));
+		GameState gameState = GameState.startGame(Arrays.asList(playerTypes[0], playerTypes[1]), 10);
 		gameState.setPlayerDifficultyLevel(0, 3);
 		gameState.setPlayerDifficultyLevel(1, 4);
 		Scanner scanner = new Scanner(System.in);
