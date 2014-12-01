@@ -152,8 +152,10 @@ public class PlayerMoveServlet extends HttpServlet {
 		// Inicjacja restartu gry
 		HttpSession session = request.getSession();
 		GameState gameState = (GameState) session.getAttribute("gameState");
-		gameState.setGameAction(GameAction.LOAD);
-		gameState.setRestart(true);
+		if(gameState != null) {
+			gameState.setGameAction(GameAction.LOAD);
+			gameState.setRestart(true);
+		}
 		PrintWriter outStream = response.getWriter();
 		outStream.write("\" "+ "a" +" \" ");
 		outStream.close();
