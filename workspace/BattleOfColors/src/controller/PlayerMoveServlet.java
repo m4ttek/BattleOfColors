@@ -35,8 +35,6 @@ public class PlayerMoveServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		GameState gameState = (GameState) session.getAttribute("gameState");
-		System.out.println(session);
-		System.out.println(gameState);
 		GameAction action;
 		if(gameState != null) {
 			action = gameState.getGameAction();
@@ -64,25 +62,47 @@ public class PlayerMoveServlet extends HttpServlet {
 			if(PlayerType.valueOf(request.getParameter("player2")).equals(PlayerType.AI_MIN_MAX))
 				gameState.setPlayerDifficultyLevel(1, Integer.parseInt(request.getParameter("level2")));
 
-			String gameInfo=new String();
-			gameInfo=gameInfo.concat(gameState.getCurrentPlayerType()+"+");
-			gameInfo=gameInfo.concat(gameState.getTableWidth()+"+"+gameState.getTableHeight()+"+");
-			gameInfo=gameInfo.concat(getAvailableColors(gameState));
-			gameInfo=gameInfo.concat("+");		
-			gameInfo=gameInfo.concat(getMapColors(gameState));
+			if(((PlayerType.valueOf(request.getParameter("player1"))).equals(PlayerType.HUMAN) ||
+				(PlayerType.valueOf(request.getParameter("player2"))).equals(PlayerType.HUMAN)) &&
+				gameState.getCurrentPlayerType() != PlayerType.HUMAN) {
+					
+				try {
+					gameState.makeNextMove(null);
+				} catch (IncorrectColorException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			StringBuilder gameInfo=new StringBuilder();
+			gameInfo.append(gameState.getCurrentPlayerType()+"+");
+			gameInfo.append(gameState.getTableWidth()+"+"+gameState.getTableHeight()+"+");
+			gameInfo.append(getAvailableColors(gameState));
+			gameInfo.append("+");		
+			gameInfo.append(getMapColors(gameState) + "+");
+			gameInfo.append("0+");
+			gameInfo.append("0+");
+			gameInfo.append("1");
 			PrintWriter outStream = response.getWriter();
 			outStream.write("\""+gameInfo+"\"");
 			outStream.close();
 			return;
 		}
 		if(action == GameAction.PLAY && request.getParameter("size") != null) {
+			//Continuing game
 			System.out.println("Continuing game");
-			String gameInfo=new String();
-			gameInfo=gameInfo.concat(gameState.getCurrentPlayerType()+"+");
-			gameInfo=gameInfo.concat(gameState.getTableWidth()+"+"+gameState.getTableHeight()+"+");
-			gameInfo=gameInfo.concat(getAvailableColors(gameState));
-			gameInfo=gameInfo.concat("+");		
-			gameInfo=gameInfo.concat(getMapColors(gameState));
+			
+			int firstPlayerFields = gameState.getPlayerTakenFieldsNumber(0);
+			int secondPlayerFields = gameState.getPlayerTakenFieldsNumber(1);
+			
+			StringBuilder gameInfo=new StringBuilder();
+			gameInfo.append(gameState.getCurrentPlayerType()+"+");
+			gameInfo.append(gameState.getTableWidth()+"+"+gameState.getTableHeight()+"+");
+			gameInfo.append(getAvailableColors(gameState));
+			gameInfo.append("+");		
+			gameInfo.append(getMapColors(gameState) + "+");
+			gameInfo.append(Integer.toString(firstPlayerFields) + "+");
+			gameInfo.append(Integer.toString(secondPlayerFields) + "+");
+			gameInfo.append(Integer.toString(gameState.getTurn()));
 			PrintWriter outStream = response.getWriter();
 			outStream.write("\""+gameInfo+"\"");
 			outStream.close();
@@ -91,6 +111,8 @@ public class PlayerMoveServlet extends HttpServlet {
 		if(action==GameAction.PLAY) {
 			System.out.println("xax");
 			String chosenColor;
+			boolean makeAiMove = false;
+			
 			if(gameState.getCurrentPlayerType().equals(PlayerType.AI_MIN_MAX))
 				chosenColor=null;
 			else
@@ -98,25 +120,41 @@ public class PlayerMoveServlet extends HttpServlet {
 			
 			System.out.println("Gracz o id: "+gameState.getCurrentPlayerId()+" typu: "+gameState.getCurrentPlayerType()+
 					" wybral kolor: "+chosenColor);
+			
+			int takenFields = 0;
+			int otherTakenFields = gameState.getPreviousPlayerTakenFieldsNumber();
+			
 			try{
 				gameState.makeNextMove(chosenColor);
+				takenFields = gameState.getPreviousPlayerTakenFieldsNumber();
+				if(chosenColor != null && gameState.getCurrentPlayerType() != PlayerType.HUMAN) {
+					makeAiMove = true;
+					gameState.makeNextMove(null);
+				}
 			}
 			catch(IncorrectColorException e){
 				System.out.println(e.getMessage());
 				return;
 			}
+			if(makeAiMove) {
+				otherTakenFields = gameState.getPreviousPlayerTakenFieldsNumber();
+			}
+
+			StringBuilder gameInfo=new StringBuilder("*");
 			
-			String gameInfo=new String("*");
-			
-			int takenFields = gameState.getPreviousPlayerTakenFieldsNumber();
-			
-			gameInfo=gameInfo.concat(Integer.toString(gameState.getPreviousPlayerId())+'+');
-			gameInfo=gameInfo.concat(Integer.toString(takenFields)+'+');
-			gameInfo=gameInfo.concat(Integer.toString(gameState.getTurn())+'+');
-			gameInfo=gameInfo.concat(gameState.getCurrentPlayerType()+"+");
-			gameInfo=gameInfo.concat(getAvailableColors(gameState));
-			gameInfo=gameInfo.concat("+");
-			gameInfo=gameInfo.concat(getMapColors(gameState));
+			if(makeAiMove) {
+				gameInfo.append(Integer.toString(gameState.getCurrentPlayerId())+'+');
+			}
+			else {
+				gameInfo.append(Integer.toString(gameState.getPreviousPlayerId())+'+');
+			}
+			gameInfo.append(Integer.toString(takenFields)+'+');
+			gameInfo.append(Integer.toString(gameState.getTurn())+'+');
+			gameInfo.append(gameState.getCurrentPlayerType()+"+");
+			gameInfo.append(getAvailableColors(gameState));
+			gameInfo.append("+");
+			gameInfo.append(getMapColors(gameState) + "+");
+			gameInfo.append(Integer.toString(otherTakenFields));
 			
 		
 			if (gameState.isGameFinished()) {
@@ -131,7 +169,7 @@ public class PlayerMoveServlet extends HttpServlet {
 					id=gameState.getWinner();
 				/*else
 					id=(p1>p2)? gameState.getPreviousPlayerId() : gameState.getCurrentPlayerId();*/
-				gameInfo=id+"+"+p1+"+"+p2+gameInfo;
+				gameInfo = new StringBuilder(id+"+"+p1+"+"+p2+gameInfo);
 				
 			}
 	
@@ -164,26 +202,26 @@ public class PlayerMoveServlet extends HttpServlet {
 	
 	private String getAvailableColors(GameState gameState){
 		List <Colors> availableColors = gameState.getAvailableColorsForCurrentPlayer();
-		String colorInfo=new String();
+		StringBuilder colorInfo=new StringBuilder();
 		for(Colors color : availableColors){
-			colorInfo=colorInfo.concat(color.getColorName()+"|");
+			colorInfo=colorInfo.append(color.getColorName()+"|");
 		}
-		return colorInfo;
+		return colorInfo.toString();
 	}
 	private String getMapColors(GameState gameState){
-		String mapInfo=new String();
+		StringBuilder mapInfo=new StringBuilder();
 		List<Colors> table = (List<Colors>) gameState.getCurrentTable();
 		int i=0;
 		for (Colors color : table) {
-			mapInfo=mapInfo.concat(color.getColorName());
+			mapInfo=mapInfo.append(color.getColorName());
 			if(i++==gameState.getTableWidth()-1){
-				mapInfo=mapInfo.concat("#");
+				mapInfo=mapInfo.append("#");
 				i=0;
 			}
 			else
-				mapInfo=mapInfo.concat("|");
+				mapInfo=mapInfo.append("|");
 		}
-		return mapInfo;
+		return mapInfo.toString();
 	}
 
 }

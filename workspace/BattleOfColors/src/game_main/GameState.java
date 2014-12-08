@@ -109,6 +109,7 @@ public class GameState {
 		if (playerIdx % listOfPlayers.size() == 0) {
 			playerIdx = 0;
 		}
+		turn = 1+(turn)%2;
 	}
 	
 	public Colors getOtherPlayersColor(Integer playerId) {

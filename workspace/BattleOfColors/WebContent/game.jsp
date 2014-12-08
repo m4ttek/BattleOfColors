@@ -146,10 +146,15 @@
 					var playerType=array[0];
 					var width=array[1];
 					var height=array[2];
+					var firstPlayerFields=array[5];
+					var secondPlayerFields=array[6];
+					var turn=array[7];
 					
 					var availableColors=array[3].split("|");
 					
-					
+					$('.panel .stats p.player0').html('gracz#1: '+firstPlayerFields);
+					$('.panel .stats p.player1').html('gracz#2: '+secondPlayerFields);
+					$('.panel .stats p.turn').html('ruch: '+turn);
 					
 					$('.game').prepend('<div id="size" style="display:none;">'+width+'</div>');
 					
@@ -223,8 +228,10 @@
 							var nrfields=parseInt(array[1]);
 							var turn=parseInt(array[2]);
 							var playerType=array[3];
+							var othernrfields=parseInt(array[6]);
 						
 							$('.panel .stats p.player'+(playerid)).html('gracz#'+(playerid+1)+': '+nrfields);
+							$('.panel .stats p.player'+((playerid+1)%2)).html('gracz#'+(1+(playerid+1)%2)+': '+othernrfields);
 							$('.panel .stats p.turn').html('ruch: '+turn);
 							
 							var availableColors=array[4].split("|");
