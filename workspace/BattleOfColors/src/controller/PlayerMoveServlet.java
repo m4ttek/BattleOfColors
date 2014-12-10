@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
  * Servlet implementation class PlayerMoveServlet
  * @author Michał Pluta
  */
-@WebServlet(description = "Servlet called when a player makes a move", urlPatterns = { "/PlayerMoveServlet" })
+@WebServlet(description = "Servlet called when a player makes a move", urlPatterns = { "/PlayerMoveServlet" }, asyncSupported = true)
 public class PlayerMoveServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	//private GameState gameState;

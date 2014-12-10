@@ -54,8 +54,8 @@ public class StatisticsPerformer {
 	 * @return lista operacji
 	 */
 	public List<StatisticalOperation> getReadyOperations() {
-		List<StatisticalOperation> returnList = new ArrayList<StatisticalOperation>(listOfFinishedStatistics);
-		listOfFinishedStatistics.clear();
+		List<StatisticalOperation> returnList = listOfFinishedStatistics;
+		listOfFinishedStatistics = new ArrayList<StatisticalOperation>();
 		return returnList;
 	}
 	
