@@ -12,6 +12,9 @@
 <link href='http://fonts.googleapis.com/css?family=Voltaire'
 	rel='stylesheet' type='text/css'>
 <script src='js/statistics.js'></script>
+<script src="js/highcharts.js"></script>
+<script src="js/highcharts-more.js"></script>
+<script src="js/modules/exporting.js"></script>
 </head>
 <body>
 	<div id="content">
@@ -70,8 +73,12 @@
 				</form>
 			</div>
 		</div>
-		<div id='pasek'>sdad</div>
-		<div id="json"></div>
+		<div id='pasek'></div>
+		<div class="results hidden">
+			<h1>Wyniki</h1>
+			<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+			<div id="overall"></div>
+		</div>
 	</div>
 </body>
 </html>

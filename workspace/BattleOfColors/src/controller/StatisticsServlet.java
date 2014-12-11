@@ -5,6 +5,7 @@ import game_utils.PlayerType;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -61,12 +62,17 @@ public class StatisticsServlet extends HttpServlet {
 	 */
 	public static final String STATISTICS_START_PREFIX = "caluculate_statistics";
 
-	private static final ExecutorService executor = Executors.newCachedThreadPool();
+	private static final ExecutorService executor = Executors.newFixedThreadPool(100);
 
 	/**
 	 * Logger zdarzeń.
 	 */
 	private static final Logger logger = Logger.getLogger("controller");
+	
+	/**
+	 * Maksymalny czas życia asynchronicznego kontekstu.
+	 */
+	private static final long ASYNC_CONTEXT_LIVE_TIME = 10 * 60 * 1000;
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -78,6 +84,8 @@ public class StatisticsServlet extends HttpServlet {
 			IOException {
 		logger.entering("doGet", "StatisticsServlet");
 		httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+		httpServletResponse.setHeader("Connection", "keep-alive");
+		httpServletResponse.setContentType("application/json");
 		AsyncContext asyncContext;
 
 		String state = httpServletRequest.getParameter("state");
@@ -87,21 +95,22 @@ public class StatisticsServlet extends HttpServlet {
 			logger.log(Level.INFO, "Stan przysłany od klienta: " + state);
 		}
 		
-		PrintWriter writer = httpServletResponse.getWriter();
+		//PrintWriter writer = httpServletResponse.getWriter();
 		if (REQUEST_STATES.START.getNazwa().equals(state)) {
 			logger.log(Level.INFO, "Wystartowanie nowego wątku obliczeniowego");
 			asyncContext = httpServletRequest.startAsync(httpServletRequest,httpServletResponse);
+			asyncContext.setTimeout(ASYNC_CONTEXT_LIVE_TIME);
 			executor.execute(new StatisticCalculations(asyncContext));
 			
 			logger.log(Level.INFO, "Odesłanie informacji do klienta: " + REQUEST_STATES.CALCULATING.getNazwa());
-			writer.print("\"" + REQUEST_STATES.CALCULATING.getNazwa() + "\"");
+			//writer.print("\"" + REQUEST_STATES.CALCULATING.getNazwa() + "\"");
 		} else if (REQUEST_STATES.CALCULATING.getNazwa().equals(state)) {
 			if (httpServletRequest.getAsyncContext() != null) {
 				logger.log(Level.INFO, "Obliczanie nie skończyło się");
-				writer.print("\"" + REQUEST_STATES.CALCULATING.getNazwa() + "\"");
+				//writer.print("\"" + REQUEST_STATES.CALCULATING.getNazwa() + "\"");
 			} else {
 				logger.log(Level.INFO, "Obliczanie zakończone");
-				writer.print("\"" + REQUEST_STATES.COMPLETE.getNazwa() + "\"");
+				//writer.print("\"" + REQUEST_STATES.COMPLETE.getNazwa() + "\"");
 			}
 		} else if (REQUEST_STATES.COMPLETE.getNazwa().equals(state)) {
 			if (httpServletRequest.getAsyncContext() != null) {
@@ -110,14 +119,15 @@ public class StatisticsServlet extends HttpServlet {
 				httpServletResponse
 						.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			}
-			writer.print("\"" + REQUEST_STATES.COMPLETE.getNazwa() + "\"");
+			//writer.print("\"" + REQUEST_STATES.COMPLETE.getNazwa() + "\"");
 		} else {
 			logger.log(Level.WARNING, "Stan przysłany od klienta nie jest obsługiwany: " + state);
 		}
 		
-		writer.close();
+		//writer.close();
 		logger.exiting("doGet", "StatisticsServlet");
 	}
+	
 	public class StatisticCalculations implements Runnable {
 
 		private final AsyncContext asyncContext;
@@ -129,29 +139,14 @@ public class StatisticsServlet extends HttpServlet {
 		@Override
 		public void run() {
 			logger.entering(StatisticCalculations.class.getName(), "run");
-			ServletRequest request = asyncContext.getRequest();
 			Integer numberOfGames = 0;
-			OperationConfig config = null;
-			try {
-				numberOfGames = Integer.valueOf(request
-						.getParameter("numberOfGames"));
-				config = new OperationConfig(PlayerType.getPlayerType(request
-						.getParameter("player1")), PlayerType.getPlayerType(request
-						.getParameter("player2")), Integer.valueOf(request
-						.getParameter("level1")), Integer.valueOf(request
-						.getParameter("level2")), Integer.valueOf(request
-						.getParameter("size")));
-				
-			} catch (NumberFormatException e) {
-				logger.log(Level.WARNING, "Wystąpił NumberFormatException przy konwersji parametrów pobranych od klienta!");
-				asyncContext.complete();
-				return;
-			}
-			logger.log(Level.WARNING, "Utworzona konfiguracja statystyk: " + config);
-			
+			ServletRequest request = asyncContext.getRequest();
+			numberOfGames = Integer.valueOf(request
+					.getParameter("numberOfGames"));
 			StatisticsPerformer performer = StatisticsPerformer.getPerfomer();
 			StatisticalOperationFactory statisticalOperationFactory = StatisticalOperationFactory
 					.getStatisticalOperationFactory();
+			OperationConfig config = prepareConfiguration();
 			for (int i = 0; i < numberOfGames; i++) {
 				performer.addStatisticalOperation(statisticalOperationFactory
 						.produce(config));
@@ -179,18 +174,22 @@ public class StatisticsServlet extends HttpServlet {
 			long wholeGameTime = 0;
 			
 			Gson gson = new GsonBuilder().create();
-			
+			PrintWriter writer;
+			try {
+				writer = asyncContext.getResponse().getWriter();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Statistic servlet error while writing");
+			}
 			logger.log(Level.INFO, "Wyznaczenie statystyk dla klienta.");
+			
+			Map<Integer, Map<String, String>> gamesResults = new HashMap<Integer, Map<String, String>>();
 			for (StatisticalOperation statisticalOperation : readyOperations) {
-				Long runningTime = statisticalOperation.getRunningTime();
-				Map<String, String> operationResult = statisticalOperation
-						.operationResult();
+				Map<String, String> operationResult = statisticalOperation.operationResult();
 				
 				String winnerId = operationResult.get("winner");
 				String meanMoveTime = operationResult.get("meanMoveTime");
 				String numberOfOverallMoves = operationResult.get("overallMoves");
-				String fastestMove = operationResult.get("fastestMove");
-				String slowestMove = operationResult.get("slowestMove");
 			
 				if (winnerId.equals("0")) {
 					player1wins++;
@@ -206,21 +205,47 @@ public class StatisticsServlet extends HttpServlet {
 				}
 				wholeGameTime += statisticalOperation.getRunningTime();
 				operationNumber++;
-				
-				//gson.toJson(operationResult);
+				gamesResults.put(operationNumber, operationResult);
 			}
 			
-			try {
-				PrintWriter writer = asyncContext.getResponse().getWriter();
-				logger.log(Level.INFO, "Wygenerowany json: " + gson.toString());
-				writer.print("\"" + gson.toString() + "\"");
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Statistic servlet error while writing");
+			Map<String, String> overallGameStatistics = new HashMap<String, String>();
+			if (operationNumber != 0) {
+				overallGameStatistics.put("player1wins", String.valueOf(player1wins));
+				overallGameStatistics.put("player2wins", String.valueOf(player2wins));
+				overallGameStatistics.put("wholeGameTime", String.valueOf(wholeGameTime));
+				overallGameStatistics.put("wholeMeanMoveTime", String.valueOf((float) wholeMoveTime/ numberOfGames));
+				overallGameStatistics.put("wholeMeanNumberOfMoves", String.valueOf((float) wholeNumberOfMoves/ numberOfGames));
 			}
-			
+			gamesResults.put(0, overallGameStatistics);
+			logger.log(Level.INFO, "Wygenerowany json: " + gson.toJson(gamesResults));
+			writer.println(gson.toJson(gamesResults));
+			writer.flush();
+			asyncContext.complete();
 			logger.exiting(StatisticCalculations.class.getName(), "run");
+		}
+		
+		/**
+		 * Przygotowuje konfigurację dla przeprowadzanych obliczeń.
+		 * 
+		 * @return
+		 */
+		private OperationConfig prepareConfiguration() {
+			OperationConfig config = null;
+			ServletRequest request = asyncContext.getRequest();
+			try {
+				config = new OperationConfig(PlayerType.getPlayerType(request.getParameter("player1")), 
+						PlayerType.getPlayerType(request.getParameter("player2")),
+						Integer.valueOf(request.getParameter("level1")),
+						Integer.valueOf(request.getParameter("level2")),
+						Integer.valueOf(request.getParameter("size")));
+				
+			} catch (NumberFormatException e) {
+				logger.log(Level.WARNING, "Wystąpił NumberFormatException przy konwersji parametrów pobranych od klienta!");
+				asyncContext.complete();
+				return null;
+			}
+			logger.log(Level.WARNING, "Utworzona konfiguracja statystyk: " + config);
+			return config;
 		}
 	}
 }
