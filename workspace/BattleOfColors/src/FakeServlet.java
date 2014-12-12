@@ -4,8 +4,8 @@ import game_utils.Colors;
 import game_utils.PlayerType;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -50,15 +50,15 @@ public class FakeServlet {
 		System.out.println(playerColors.toString());
 	}
 
-	private static void drawGameTable(Collection<Colors> currentTable, Integer tableWidth) {
+	private static void drawGameTable(Map<Integer, Colors> map, Integer tableWidth) {
 		StringBuilder gameColors = new StringBuilder();
 		for (int i = 0; i < tableWidth; i++) {
 			gameColors.append("-----");
 		}
 		gameColors.append("\n");
 		int x = 0;
-		for (Colors tableColor: currentTable) {
-			gameColors.append("|").append(tableColor.getColorName().substring(0, 3)).append("|");
+		for (int i = 0; i < map.size(); i++) {
+			gameColors.append("|").append(map.get(i).getColorName().substring(0, 3)).append("|");
 			x++;
 			if (x == tableWidth) {
 				gameColors.append("\n");

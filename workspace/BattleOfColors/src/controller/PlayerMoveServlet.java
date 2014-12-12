@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -210,10 +211,10 @@ public class PlayerMoveServlet extends HttpServlet {
 	}
 	private String getMapColors(GameState gameState){
 		StringBuilder mapInfo=new StringBuilder();
-		List<Colors> table = (List<Colors>) gameState.getCurrentTable();
+		Map<Integer, Colors> table = gameState.getCurrentTable();
 		int i=0;
-		for (Colors color : table) {
-			mapInfo=mapInfo.append(color.getColorName());
+		for (int idx = 0; idx < table.size(); idx++) {
+			mapInfo=mapInfo.append(table.get(idx).getColorName());
 			if(i++==gameState.getTableWidth()-1){
 				mapInfo=mapInfo.append("#");
 				i=0;

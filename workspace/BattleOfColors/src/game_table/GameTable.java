@@ -5,6 +5,7 @@ import game_utils.Colors;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interfejs dla stołów do gry.
@@ -18,7 +19,7 @@ public interface GameTable {
 	 * 
 	 * @return kolekcja pól stołu
 	 */
-	public Collection<Colors> getCurrentTable();
+	public Map<Integer, Colors> getCurrentTable();
 
 	/**
 	 * Zwraca szerokość stołu.
@@ -69,7 +70,7 @@ public interface GameTable {
 	 * @param noOfMoves liczba poprzednich ruchów
 	 * @return kolekcję pól reprezentujących tablicę
 	 */
-	public Collection<Colors> getHistoricalTable(int noOfMoves);
+	public Map<Integer, Colors> getHistoricalTable(int noOfMoves);
 	
 	/**
 	 * Zatwierdza wykonany ruch.

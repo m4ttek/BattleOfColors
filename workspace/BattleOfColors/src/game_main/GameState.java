@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Klasa zawierająca stan gry i możliwe operacje.
@@ -154,7 +155,7 @@ public class GameState {
 		return listOfAvailableColors;
 	}
 	
-	public Collection<Colors> getCurrentTable() {
+	public Map<Integer, Colors> getCurrentTable() {
 		return gameTable.getCurrentTable();
 	}
 	public int getTurn() {
