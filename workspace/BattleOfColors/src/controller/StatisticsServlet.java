@@ -213,8 +213,8 @@ public class StatisticsServlet extends HttpServlet {
 				overallGameStatistics.put("player1wins", String.valueOf(player1wins));
 				overallGameStatistics.put("player2wins", String.valueOf(player2wins));
 				overallGameStatistics.put("wholeGameTime", String.valueOf(wholeGameTime));
-				overallGameStatistics.put("wholeMeanMoveTime", String.valueOf((float) wholeMoveTime/ numberOfGames));
-				overallGameStatistics.put("wholeMeanNumberOfMoves", String.valueOf((float) wholeNumberOfMoves/ numberOfGames));
+				overallGameStatistics.put("wholeMeanMoveTime", String.valueOf((double) wholeMoveTime/ numberOfGames));
+				overallGameStatistics.put("wholeMeanNumberOfMoves", String.valueOf((double) wholeNumberOfMoves/ numberOfGames));
 			}
 			gamesResults.put(0, overallGameStatistics);
 			logger.log(Level.INFO, "Wygenerowany json: " + gson.toJson(gamesResults));

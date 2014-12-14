@@ -14,7 +14,9 @@
 <script src='js/statistics.js'></script>
 <script src="js/highcharts.js"></script>
 <script src="js/highcharts-more.js"></script>
+<script src="js/highcharts-3d.js"></script>
 <script src="js/modules/exporting.js"></script>
+<script src="js/themes/sand-signika.js"></script>
 </head>
 <body>
 	<div id="content">
@@ -73,11 +75,35 @@
 				</form>
 			</div>
 		</div>
+	
 		<div id='pasek'></div>
-		<div class="results hidden">
+		<div class="results">
 			<h1>Wyniki</h1>
-			<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-			<div id="overall"></div>
+			<div id="move_time_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+			<div id="wins_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+			<table id="overall" style="margin: 0 auto">
+				<tr><th colspan="2">Ogólne statystyki</th></tr>
+							<tr>
+								<th>Całkowity czas obliczeń statystycznych</th>
+								<td id="whole_time"></td>
+								</tr>
+							<tr>
+								<th>Średni czas wykonywanego ruchu</th>
+								<td id="move_mean_whole_time"></td>
+							</tr>
+							<tr>
+								<th>Średnia liczba ruchów</th>
+								<td id="mean_move_whole_number"></td>
+							</tr>
+							<tr>
+								<th>Liczba zwycięstw pierwszego gracza</th>
+								<td id="first_player_wins"></td>
+							</tr>
+							<tr>
+								<th>Liczba zwycięstw drugiego gracza</th>
+								<td id="second_player_wins"></td>
+							</tr>
+			</table>
 		</div>
 	</div>
 	<div class="modal"></div>

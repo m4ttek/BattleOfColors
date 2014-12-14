@@ -11,6 +11,7 @@ var state = "start";
 
 var dataMoveRanges = [];
 var dataMeanMove = [];
+var winnersTable = [];
 var dataOverall;
 /**
  * Konfiguracja ajax'a.
@@ -55,8 +56,8 @@ function prepareDataForHighcharts(json) {
 			dataOverall = json[result];
 			console.log(dataOverall);
 		} else {
-			dataMoveRanges.push([resultNumber, parseInt(json[result].slowestMove), parseInt(json[result].fastestMove)]);
-			dataMeanMove.push([resultNumber, parseInt(json[result].meanMoveTime)]);
+			dataMoveRanges.push([resultNumber, parseFloat(json[result].slowestMove) / 1000000, parseFloat(json[result].fastestMove)/ 1000000]);
+			dataMeanMove.push([resultNumber, parseFloat(json[result].meanMoveTime)/ 1000000]);
 		}
 		resultNumber += 1;
 	}
@@ -75,8 +76,16 @@ function handleResponse(response) {
 		$('#pasek').hide();
 		$('.results').show();
 		prepareDataForHighcharts(response);
+		winnersTable.push(["gracz 1", parseFloat(dataOverall.player1wins)]);
+		winnersTable.push(["gracz 2", parseFloat(dataOverall.player2wins)]);
+		
 		drawHighcharts();
-		$('#overall').html(dataOverall.player1wins + " " + dataOverall.player2wins + " " + dataOverall.wholeMeanMoveTime + " " + dataOverall.wholeGameTime);
+		//$('#overall').html(dataOverall.player1wins + " " + dataOverall.player2wins + " " + dataOverall.wholeMeanMoveTime + " " + dataOverall.wholeGameTime);
+		$('#whole_time').html(parseFloat(dataOverall.wholeGameTime) / 1000000000 + ' s');
+		$('#move_mean_whole_time').html((parseFloat(dataOverall.wholeMeanMoveTime) / 1000000).toFixed(3) + ' ms');
+		$('#mean_move_whole_number').html(parseFloat(dataOverall.wholeMeanNumberOfMoves).toFixed(0));
+		$('#first_player_wins').html(parseInt(dataOverall.player1wins));
+		$('#second_player_wins').html(parseInt(dataOverall.player2wins));
 		window.clearInterval(timerId);
 	} else {
 		document.getElementById("pasek").innerHTML = "błąd responsa";
@@ -139,9 +148,10 @@ $(document).ready(function() {
 function drawHighcharts() {
 
     var ranges = dataMoveRanges,
-        averages = dataMeanMove;
+        averages = dataMeanMove,
+        winner = winnersTable;
 
-    $('#container').highcharts({
+    $('#move_time_container').highcharts({
 
         title: {
             text: 'Czas wykonywanego ruchu'
@@ -151,15 +161,17 @@ function drawHighcharts() {
         	title: {
                 text: 'numer gry'
             },
-        	type: 'number',
-            min: 0
+        	type: 'linear',
+            min: 1,
+            tickInterval: 1
         },
 
         yAxis: {
             title: {
                 text: 'czas'
             },
-            min: 0
+            min: 0,
+            minPadding: 0.1
         },
 
         tooltip: {
@@ -181,7 +193,7 @@ function drawHighcharts() {
                 lineColor: Highcharts.getOptions().colors[0]
             }
         }, {
-            name: 'Przedział (min - max)',
+            name: 'Przedział (max - min)',
             data: ranges,
             type: 'arearange',
             lineWidth: 0,
@@ -189,104 +201,49 @@ function drawHighcharts() {
             color: Highcharts.getOptions().colors[0],
             fillOpacity: 0.3,
             zIndex: 0
-        }]
+        }, {
+            name: 'Średni czas ruchu',
+            data: averages,
+            zIndex: 1,
+            marker: {
+                fillColor: 'white',
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[0]
+            }
+        },]
     });
     
-    Highcharts.createElement('link', {
-    	   href: 'http://fonts.googleapis.com/css?family=Signika:400,700',
-    	   rel: 'stylesheet',
-    	   type: 'text/css'
-    	}, null, document.getElementsByTagName('head')[0]);
-
-    	// Add the background image to the container
-    Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
-    	proceed.call(this);
-    	this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
+    $('#wins_container').highcharts({
+    	chart: {
+            type: 'pie',
+            options3d: {
+                enabled: true,
+                alpha: 45,
+                beta: 0
+            }
+        },
+    	title: {
+            text: 'Liczba zwycięstw'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                depth: 35,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'procent wygranych',
+            data: winnersTable
+        }]
     });
 
-    Highcharts.theme = {
-    		colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
-    		         "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
-    		         chart: {	
-    		        	 backgroundColor: null,
-    		        	 style: {
-    		        		 fontFamily: "Signika, serif"
-    		        	 }
-    		         },
-    	   title: {
-    	      style: {
-    	         color: 'black',
-    	         fontSize: '16px',
-    	         fontWeight: 'bold'
-    	      }
-    	   },
-    	   subtitle: {
-    	      style: {
-    	         color: 'black'
-    	      }
-    	   },
-    	   tooltip: {
-    	      borderWidth: 0
-    	   },
-    	   legend: {
-    	      itemStyle: {
-    	         fontWeight: 'bold',
-    	         fontSize: '13px'
-    	      }
-    	   },
-    	   xAxis: {
-    	      labels: {
-    	         style: {
-    	            color: '#6e6e70'
-    	         }
-    	      }
-    	   },
-    	   yAxis: {
-    	      labels: {
-    	         style: {
-    	            color: '#6e6e70'
-    	         }
-    	      }
-    	   },
-    	   plotOptions: {
-    	      series: {
-    	         shadow: true
-    	      },
-    	      candlestick: {
-    	         lineColor: '#404048'
-    	      },
-    	      map: {
-    	         shadow: false
-    	      }
-    	   },
-
-    	   // Highstock specific
-    	   navigator: {
-    	      xAxis: {
-    	         gridLineColor: '#D0D0D8'
-    	      }
-    	   },
-    	   rangeSelector: {
-    	      buttonTheme: {
-    	         fill: 'white',
-    	         stroke: '#C0C0C8',
-    	         'stroke-width': 1,
-    	         states: {
-    	            select: {
-    	               fill: '#D0D0D8'
-    	            }
-    	         }
-    	      }
-    	   },
-    	   scrollbar: {
-    	      trackBorderColor: '#C0C0C8'
-    	   },
-
-    	   // General
-    	   background2: '#E0E0E8'
-    	   
-    	};
-
-    	// Apply the theme
-    	Highcharts.setOptions(Highcharts.theme);
 }

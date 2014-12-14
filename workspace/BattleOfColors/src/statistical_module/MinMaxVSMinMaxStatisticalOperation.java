@@ -4,10 +4,8 @@ import game_main.GameState;
 import game_main.IncorrectColorException;
 import game_utils.PlayerType;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +21,9 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 
 	private final GameState gameState;
 
-	private Timestamp startTime;
+	private long startTime;
 
-	private Timestamp endTime;
+	private long endTime;
 
 	private Integer winnerId;
 
@@ -52,18 +50,18 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 
 	@Override
 	public void run() throws IncorrectColorException {
-		startTime = new Timestamp(new Date().getTime());
+		startTime = System.nanoTime();
 		
 		long moveStartTime;
 		long moveEndTime;
 		while(!gameState.isGameFinished()) {
-			moveStartTime = new Date().getTime();
+			moveStartTime = System.nanoTime();
 			gameState.makeNextMove(null);
-			moveEndTime = new Date().getTime();
+			moveEndTime = System.nanoTime();
 			numberOfOverallMoves++;
 			moveRunningTimes.add(moveEndTime - moveStartTime);
 		}
-		endTime = new Timestamp(new Date().getTime());
+		endTime = System.nanoTime();
 		long wholeTime = 0;
 		for (Long time : moveRunningTimes) {
 			wholeTime += time;
@@ -86,6 +84,6 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 
 	@Override
 	public Long getRunningTime() {
-		return endTime.getTime() - startTime.getTime();
+		return endTime - startTime;
 	}
 }
