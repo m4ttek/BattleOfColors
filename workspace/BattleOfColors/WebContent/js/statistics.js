@@ -126,6 +126,12 @@ $(document).ready(function() {
 	$('#pasek').hide();
 	$('.start').click(statisticsHandler);
 	timerId = window.setInterval(startAjax, 500);
+	$body = $("body");
+
+	$(document).on({
+	    ajaxStart: function() { $body.addClass("loading");    },
+	     ajaxStop: function() { $body.removeClass("loading"); }    
+	});
 });
 
 
