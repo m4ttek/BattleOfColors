@@ -155,7 +155,7 @@ public class DefaultGameTable implements GameTable {
 	}
 	
 	private ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
-			Set<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
+			List<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
 			Set<ColorGroup> secondPlayerGroups) {
 		
 		ColorGroup neighborGroup = null;
@@ -237,11 +237,11 @@ public class DefaultGameTable implements GameTable {
 		return false;
 	}
 	
-	protected Set<Integer> findInaccessibleFields(Colors playerColor) {
+	protected List<Integer> findInaccessibleFields(Colors playerColor) {
 		//System.out.println("Call no. " + tempCalls++);
 
-		Set<Integer> takenFields = new HashSet<Integer>();
-		Set<ColorGroup> colorGroups = new HashSet<ColorGroup>();
+		List<Integer> takenFields = new LinkedList<Integer>();
+		List<ColorGroup> colorGroups = new LinkedList<ColorGroup>();
 		ColorGroup[][] groups = new ColorGroup[table_height][table_width];
 		Set<ColorGroup> firstPlayerGroups = new HashSet<ColorGroup>();
 		Set<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
@@ -332,7 +332,87 @@ public class DefaultGameTable implements GameTable {
 		if (originColor == color) {
 			throw new RuntimeException("fillNewColor: filling with existing color: " + color);
 		}
+
+		Set<Integer> setOfExploredPositions = new HashSet<Integer>();
+		Set<Integer> setOfMainPositions =  new HashSet<Integer>();
+		setOfMainPositions.add(originPosition);
 		
+		while (!setOfMainPositions.isEmpty()) {
+			Integer mainPosition = setOfMainPositions.iterator().next();
+			
+			// poruszamy się maksymalnie w lewo, pózniej w prawo od mainPoisition
+			boolean isLeftDir = true;
+			Integer pointToCheck = mainPosition;
+			boolean onNewFields = false;
+			boolean onAlsoRightNewFields = false;
+			if (tableMap.get(mainPosition) == color) {
+				onNewFields = true;
+				onAlsoRightNewFields = true;
+			}
+			while (true) {
+				if (!onNewFields && (tableMap.get(pointToCheck) == originColor || tableMap.get(pointToCheck) == color)) {
+					if (tableMap.get(pointToCheck) == originColor) {
+						tableMap.put(pointToCheck, color);
+					} else {
+						onNewFields = true;
+					}
+				} else if (onNewFields && tableMap.get(pointToCheck) == color) {
+				} else {
+					if (!isLeftDir) {
+						break;
+					}
+					pointToCheck = mainPosition + 1;
+					if (pointToCheck % table_width == table_width) {
+						break;
+					}
+					isLeftDir = false;
+					onNewFields = onAlsoRightNewFields;
+					continue;
+				}
+				if (!(pointToCheck - table_width < 0) && !setOfExploredPositions.contains(pointToCheck - table_width) 
+						&& (!onNewFields && tableMap.get(pointToCheck - table_width) == originColor || (tableMap.get(pointToCheck - table_width) == color))) {
+					setOfMainPositions.add(pointToCheck - table_width);
+				}
+				if (!(pointToCheck + table_width > table_height * table_width) && !setOfExploredPositions.contains(pointToCheck + table_width) 
+						&& (!onNewFields && tableMap.get(pointToCheck + table_width) == originColor || (tableMap.get(pointToCheck + table_width) == color))) {
+					setOfMainPositions.add(pointToCheck + table_width);
+				}
+				setOfExploredPositions.add(pointToCheck);
+				setOfMainPositions.remove(pointToCheck);
+				
+				if(getHistoricalTable(0).get(pointToCheck) != Colors.BLACK) {
+					getHistoricalTakenFields(0).add(new Point(pointToCheck%table_width, pointToCheck/table_width));
+				}
+				
+				if (isLeftDir) {
+					pointToCheck = pointToCheck - 1;
+					if (pointToCheck % table_width < 0) {
+						isLeftDir = false;
+						pointToCheck = mainPosition + 1;
+						onNewFields = onAlsoRightNewFields;
+					}
+				} else {
+					pointToCheck = pointToCheck + 1;
+					if (pointToCheck % table_width == table_width) {
+						break;
+					}
+				}
+			}
+		}
+		setOfExploredPositions.addAll(findInaccessibleFields(color));
+		return setOfExploredPositions;
+	}
+	
+	protected Set<Integer> oldFillNewColor(Map<Integer, Colors> tableMap, Point pos, Colors color) {
+		final Integer originPosition = pos.x + pos.y * table_width;
+		final Colors originColor = tableMap.get(originPosition);
+		
+		if (originPosition < 0 || originPosition >= tableMap.size()) {
+			throw new RuntimeException("fillNewColor: bad seed position: " + pos);
+		}
+		if (originColor == color) {
+			throw new RuntimeException("fillNewColor: filling with existing color: " + color);
+		}
 		Set<Integer> listOfExploredPositions = new HashSet<Integer>();
 		Set<Integer> listOfNonExploredPositions = new HashSet<Integer>();
 		listOfNonExploredPositions.add(originPosition);
@@ -369,8 +449,6 @@ public class DefaultGameTable implements GameTable {
 			listOfExploredPositions.add(exploredPos);
 		}
 		listOfExploredPositions.addAll(findInaccessibleFields(color));
-		return listOfExploredPositions;
+		return listOfNonExploredPositions;
 	}
-	
-
 }
