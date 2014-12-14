@@ -3,7 +3,6 @@ package game_player;
 import game_table.GameTable;
 import game_utils.Colors;
 
-import java.awt.Point;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +21,13 @@ public class DefaultPlayer implements Player {
 	
 	protected Set<Integer> takenFields;
 
-	private Point playerStartingPosition;
+	private Integer playerStartingPosition;
 	
 	protected Integer playerId;
 	
-	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
+	public DefaultPlayer(GameTable gameTable, Integer playerPos) {
 		this.gameTable = gameTable;
-		this.playerStartingPosition = playerStartingPosition;
+		this.playerStartingPosition = playerPos;
 		takenFields = new HashSet<Integer>(10000);
 		playerId = PLAYER_COUNT;
 		PLAYER_COUNT++;
@@ -58,7 +57,7 @@ public class DefaultPlayer implements Player {
 	}
 
 	@Override
-	public Point getPlayerOriginPlace() {
+	public Integer getPlayerOriginPlace() {
 		return playerStartingPosition;
 	}
 	

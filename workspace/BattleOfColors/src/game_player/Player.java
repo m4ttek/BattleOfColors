@@ -1,7 +1,5 @@
 package game_player;
 
-import java.awt.Point;
-
 import game_utils.Colors;
 
 /**
@@ -42,7 +40,7 @@ public interface Player {
 	 * 
 	 * @return punkt początkowy
 	 */
-	public Point getPlayerOriginPlace();
+	public Integer getPlayerOriginPlace();
 	
 	/**
 	 * Zwraca ID gracza.

@@ -1,13 +1,12 @@
 package game_player;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import game_main.GameState;
 import game_table.GameTable;
 import game_utils.Colors;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Klasa gracza grającego według algorytmu MIN-MAX
@@ -23,9 +22,9 @@ public class AIPlayerMinMax extends AIPlayer {
 	
 	private static Random RAND = new Random();
 	
-	public AIPlayerMinMax(GameTable gameTable, Point playerStartingPosition,
+	public AIPlayerMinMax(GameTable gameTable, Integer playerPos,
 			GameState gameState, Integer opponentsPlayerId, int depthLevel) {
-		super(gameTable, playerStartingPosition, gameState, opponentsPlayerId);
+		super(gameTable, playerPos, gameState, opponentsPlayerId);
 		this.depthLevel = depthLevel;
 	}
 	

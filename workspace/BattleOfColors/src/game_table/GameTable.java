@@ -2,8 +2,7 @@ package game_table;
 
 import game_utils.Colors;
 
-import java.awt.Point;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ public interface GameTable {
 	 * 
 	 * @return
 	 */
-	public Collection<Point> getPlayersStartingPoints();
+	public List<Integer> getPlayersStartingPoints();
 	
 	/**
 	 * Wykonuje hipotetyczny ruch dla gracza o danym ID.

@@ -10,7 +10,6 @@ import game_utils.Colors;
 import game_utils.GameAction;
 import game_utils.PlayerType;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,12 +44,12 @@ public class GameState {
 		gameTable = new DefaultGameTable(null,size);
 		listOfPlayers = new ArrayList<Player>();
 		
-		Collection<Point> playersStartingPoints = gameTable.getPlayersStartingPoints();
-		Iterator<Point> iterator = playersStartingPoints.iterator();
+		Collection<Integer> playersStartingPoints = gameTable.getPlayersStartingPoints();
+		Iterator<Integer> iterator = playersStartingPoints.iterator();
 		
 		int playerNo = 0;
 		for (PlayerType playerType : players) {
-			Point playerPos = iterator.next();
+			Integer playerPos = iterator.next();
 			if (playerType.equals(PlayerType.AI_MIN_MAX)) {
 				if(listOfPlayers.isEmpty()) {
 					listOfPlayers.add(new AIPlayerMinMax(gameTable, playerPos, this, playerNo+1, 4));
@@ -135,7 +134,7 @@ public class GameState {
 		return gameTable.checkIfGameFinished();
 	}
 	
-	public Point getCurrentPlayerPos() {
+	public Integer getCurrentPlayerPos() {
 		return currentPlayer.getPlayerOriginPlace();
 	}
 	
