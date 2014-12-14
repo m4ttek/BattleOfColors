@@ -3,7 +3,6 @@ package game_table;
 import game_utils.Colors;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +48,7 @@ public class DefaultGameTable implements GameTable {
 		tableRepresentation = new HashMap<Integer, Colors>();
 		historicalTables = new HashMap<Integer, Map<Integer, Colors>>();
 		historicalTakenFields = new HashMap<Integer, Set<Point>>();
-		fieldsTakenByPlayers = new HashSet<Point>();
+		fieldsTakenByPlayers = new HashSet<Point>(10000);
 		fieldsTakenByPlayers.addAll(this.playerPositions);
 		generateTable();
 	}
@@ -79,7 +78,7 @@ public class DefaultGameTable implements GameTable {
 	}
 
 	@Override
-	public List<Integer> makeHypotheticalMove(Integer playerId, Colors color) {
+	public Set<Integer> makeHypotheticalMove(Integer playerId, Colors color) {
 		Map<Integer, Colors> lastList = null;
 		Set<Point> lastFieldsTaken = null;
 		int historicalTablesSize = historicalTables.size();
@@ -110,15 +109,6 @@ public class DefaultGameTable implements GameTable {
 		}
 		historicalTakenFields.remove(historicalTakenFields.size() - 1);
 		historicalTables.remove(historicalTables.size() - 1);
-		/*
-		for (int i = historicalTables.size(); i > historicalTables.size() - noOfMoves; i--) {
-		}
-		for (int i = historicalTakenFields.size(); i > historicalTakenFields.size() - noOfMoves; i--) {
-		}*/
-		/*
-		historicalTables = new HashMap<>(historicalTables.subList(0, historicalTables.size() - noOfMoves));
-		historicalTakenFields = new HashMap<>(historicalTakenFields.subList(0, historicalTakenFields.size() - noOfMoves));
-		*/
 	}
 
 	@Override
@@ -165,7 +155,7 @@ public class DefaultGameTable implements GameTable {
 	}
 	
 	private ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
-			List<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
+			Set<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
 			Set<ColorGroup> secondPlayerGroups) {
 		
 		ColorGroup neighborGroup = null;
@@ -232,15 +222,7 @@ public class DefaultGameTable implements GameTable {
 		Point p = new Point(x,y);
 		if(getHistoricalTakenFields(0).contains(p)) {
 			//System.out.println("Field " + p.y + " " + p.x + " is player's");
-			Point playerPosition;
-			if(playerNo == 0) {
-				playerPosition = playerPositions.get(0);
-				//System.out.println("first pos is " + playerPosition.y + " " + playerPosition.x);
-			}
-			else {
-				playerPosition = playerPositions.get(1);
-				//System.out.println("second pos is " + playerPosition.y + " " + playerPosition.x);
-			}
+			Point playerPosition = playerPositions.get(playerNo);
 			Map<Integer, Colors> currentTable = getHistoricalTable(0);
 			if(currentTable.get(y*table_width+x) ==
 					currentTable.get(playerPosition.y*table_width+playerPosition.x)) {
@@ -255,11 +237,11 @@ public class DefaultGameTable implements GameTable {
 		return false;
 	}
 	
-	protected List<Integer> findInaccessibleFields(Colors playerColor) {
+	protected Set<Integer> findInaccessibleFields(Colors playerColor) {
 		//System.out.println("Call no. " + tempCalls++);
 
-		List<Integer> takenFields = new LinkedList<Integer>();
-		List<ColorGroup> colorGroups = new LinkedList<ColorGroup>();
+		Set<Integer> takenFields = new HashSet<Integer>();
+		Set<ColorGroup> colorGroups = new HashSet<ColorGroup>();
 		ColorGroup[][] groups = new ColorGroup[table_height][table_width];
 		Set<ColorGroup> firstPlayerGroups = new HashSet<ColorGroup>();
 		Set<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
@@ -340,7 +322,7 @@ public class DefaultGameTable implements GameTable {
 	 * @param color nowy kolor wypełnienia
 	 * @return lista pól zawierających nowy kolor
 	 */
-	protected List<Integer> fillNewColor(Map<Integer, Colors> tableMap, Point pos, Colors color) {
+	protected Set<Integer> fillNewColor(Map<Integer, Colors> tableMap, Point pos, Colors color) {
 		final Integer originPosition = pos.x + pos.y * table_width;
 		final Colors originColor = tableMap.get(originPosition);
 		
@@ -386,9 +368,8 @@ public class DefaultGameTable implements GameTable {
 			
 			listOfExploredPositions.add(exploredPos);
 		}
-			List<Integer> temp = findInaccessibleFields(color);
-			listOfExploredPositions.addAll(temp);
-		return new ArrayList<Integer>(listOfExploredPositions);
+		listOfExploredPositions.addAll(findInaccessibleFields(color));
+		return listOfExploredPositions;
 	}
 	
 

@@ -4,8 +4,8 @@ import game_utils.Colors;
 
 import java.awt.Point;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interfejs dla stołów do gry.
@@ -56,7 +56,7 @@ public interface GameTable {
 	 * @param color nowy kolor wypełnienia
 	 * @return listę zajętych pól przez gracza
 	 */
-	public List<Integer> makeHypotheticalMove(Integer playerId, Colors color);
+	public Set<Integer> makeHypotheticalMove(Integer playerId, Colors color);
 	
 	/**
 	 * 

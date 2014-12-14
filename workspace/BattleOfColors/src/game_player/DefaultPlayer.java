@@ -1,11 +1,11 @@
 package game_player;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-
 import game_table.GameTable;
 import game_utils.Colors;
+
+import java.awt.Point;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Klasa reprezentująca podstawowego, domyślnego gracza - człowieka.
@@ -20,7 +20,7 @@ public class DefaultPlayer implements Player {
 
 	protected Colors currentPlayerColor;
 	
-	protected List<Integer> takenFields;
+	protected Set<Integer> takenFields;
 
 	private Point playerStartingPosition;
 	
@@ -29,7 +29,7 @@ public class DefaultPlayer implements Player {
 	public DefaultPlayer(GameTable gameTable, Point playerStartingPosition) {
 		this.gameTable = gameTable;
 		this.playerStartingPosition = playerStartingPosition;
-		takenFields = new ArrayList<Integer>();
+		takenFields = new HashSet<Integer>(10000);
 		playerId = PLAYER_COUNT;
 		PLAYER_COUNT++;
 	}
