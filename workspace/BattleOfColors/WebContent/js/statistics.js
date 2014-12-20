@@ -12,6 +12,8 @@ var state = "start";
 var dataMoveRanges = [];
 var dataMeanMove = [];
 var winnersTable = [];
+var dataFirstPlayerMeanMove = [];
+var dataSecondPlayerMeanMove = [];
 var dataOverall;
 /**
  * Konfiguracja ajax'a.
@@ -58,6 +60,8 @@ function prepareDataForHighcharts(json) {
 		} else {
 			dataMoveRanges.push([resultNumber, parseFloat(json[result].slowestMove) / 1000000, parseFloat(json[result].fastestMove)/ 1000000]);
 			dataMeanMove.push([resultNumber, parseFloat(json[result].meanMoveTime)/ 1000000]);
+			dataFirstPlayerMeanMove.push([resultNumber, parseFloat(json[result].firstPlayerMeanMoveTime)/ 1000000]);
+			dataSecondPlayerMeanMove.push([resultNumber, parseFloat(json[result].secondPlayerMeanMoveTime)/ 1000000]);
 		}
 		resultNumber += 1;
 	}
@@ -204,6 +208,24 @@ function drawHighcharts() {
         }, {
             name: 'Średni czas ruchu',
             data: averages,
+            zIndex: 1,
+            marker: {
+                fillColor: 'white',
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[0]
+            }
+        },{
+            name: 'Średni czas ruchu pierwszego gracza',
+            data: dataFirstPlayerMeanMove,
+            zIndex: 1,
+            marker: {
+                fillColor: 'white',
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[0]
+            }
+        },{
+            name: 'Średni czas ruchu drugiego gracza',
+            data: dataSecondPlayerMeanMove,
             zIndex: 1,
             marker: {
                 fillColor: 'white',

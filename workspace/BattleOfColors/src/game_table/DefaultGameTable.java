@@ -215,13 +215,12 @@ public class DefaultGameTable implements GameTable {
 		return neighborGroup;
 	}
 	
-	protected boolean isPlayerPos(int playerNo, int y, int x) {
-		Point p = new Point(x,y);
-		if(getHistoricalTakenFields(0).contains(p)) {
+	protected boolean isPlayerPos(int playerNo, Integer pos) {
+		if(getHistoricalTakenFields(0).contains(pos)) {
 			//System.out.println("Field " + p.y + " " + p.x + " is player's");
 			Integer playerPosition = playerPositions.get(playerNo);
 			Map<Integer, Colors> currentTable = getHistoricalTable(0);
-			if(currentTable.get(y*table_width+x) ==
+			if(currentTable.get(pos) ==
 					currentTable.get(playerPosition)) {
 				//System.out.println("player " + playerNo + playerPosition.x + " " + playerPosition.y);
 				//System.out.println(currentTable.get(y*TABLE_WIDTH+x) + " " +
@@ -244,7 +243,7 @@ public class DefaultGameTable implements GameTable {
 		Set<ColorGroup> secondPlayerGroups = new HashSet<ColorGroup>();
 		for(int i = 0; i < table_height; i++) {
 			for(int j = 0; j < table_width; j++) {
-				if(isPlayerPos(0, i, j)) {
+				if(isPlayerPos(0, i* table_width + j)) {
 					//check group on the left
 					if(j > 0 && groups[i][j-1] != null) {
 						firstPlayerGroups.add(groups[i][j-1]);
@@ -256,7 +255,7 @@ public class DefaultGameTable implements GameTable {
 						//System.out.println("Added " + groups[i-1][j].getUid() + "to player one");
 					}
 				}
-				else if(isPlayerPos(1, i, j)) {
+				else if(isPlayerPos(1, i* table_width + j)) {
 					//check group on the left
 					if(j > 0 && groups[i][j-1] != null) {
 						secondPlayerGroups.add(groups[i][j-1]);

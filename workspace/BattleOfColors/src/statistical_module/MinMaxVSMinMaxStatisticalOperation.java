@@ -31,7 +31,15 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 	
 	private List<Long> moveRunningTimes = new ArrayList<Long>();
 
+	private List<Long> firstPlayerMoveRunningTimes = new ArrayList<Long>();
+	
+	private List<Long> secondPlayerMoveRunningTimes = new ArrayList<Long>();
+	
 	private Long meanMoveTime;
+	
+	private Long firstPlayerMeanMoveTime = 0L;
+	
+	private Long secondPlayerMeanMoveTime = 0L;
 	
 	public MinMaxVSMinMaxStatisticalOperation(int mapSize, int firstPlayerDifficultyLevel,
 			int secondPlayerDifficultyLevel) {
@@ -54,12 +62,22 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 		
 		long moveStartTime;
 		long moveEndTime;
+		boolean firstPlayerMove = true;
 		while(!gameState.isGameFinished()) {
 			moveStartTime = System.nanoTime();
 			gameState.makeNextMove(null);
 			moveEndTime = System.nanoTime();
 			numberOfOverallMoves++;
-			moveRunningTimes.add(moveEndTime - moveStartTime);
+			long timeDifference = moveEndTime - moveStartTime;
+			if (firstPlayerMove) {
+				firstPlayerMoveRunningTimes.add(timeDifference);
+				firstPlayerMeanMoveTime += timeDifference;
+			} else {
+				secondPlayerMoveRunningTimes.add(timeDifference);
+				secondPlayerMeanMoveTime += timeDifference;
+			}
+			firstPlayerMove = !firstPlayerMove;
+			moveRunningTimes.add(timeDifference);
 		}
 		endTime = System.nanoTime();
 		long wholeTime = 0;
@@ -79,6 +97,10 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 		resultMap.put("meanMoveTime", meanMoveTime.toString());
 		resultMap.put("fastestMove", Collections.min(moveRunningTimes).toString());
 		resultMap.put("slowestMove", Collections.max(moveRunningTimes).toString());
+		resultMap.put("firstPlayerMeanMoveTime", String.valueOf(((double) firstPlayerMeanMoveTime / firstPlayerMoveRunningTimes.size())));
+		resultMap.put("secondPlayerMeanMoveTime", String.valueOf(((double) secondPlayerMeanMoveTime / secondPlayerMoveRunningTimes.size())));
+		resultMap.put("firstPlayerMoveTimes", firstPlayerMoveRunningTimes.toString());
+		resultMap.put("secondPlayerMoveTimes", secondPlayerMoveRunningTimes.toString());
 		return resultMap;
 	}
 

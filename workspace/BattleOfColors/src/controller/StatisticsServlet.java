@@ -190,7 +190,8 @@ public class StatisticsServlet extends HttpServlet {
 				String winnerId = operationResult.get("winner");
 				String meanMoveTime = operationResult.get("meanMoveTime");
 				String numberOfOverallMoves = operationResult.get("overallMoves");
-			
+				String firstPlayerMoveTimes = operationResult.get("firstPlayerMoveTimes");
+				String secondPlayerMoveTimes = operationResult.get("secondPlayerMoveTimes");
 				if (winnerId.equals("0")) {
 					player1wins++;
 				} else {

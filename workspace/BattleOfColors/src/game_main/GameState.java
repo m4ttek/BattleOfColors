@@ -70,7 +70,7 @@ public class GameState {
 		for(Player player : listOfPlayers) {
 			if(player.getPlayerId() == playerId) {
 				if(player instanceof AIPlayer) {
-					((AIPlayer) player).setDifficultyLevel(level);
+					((AIPlayer) player).setDifficultyLevel(level + 4);
 				}
 				return;
 			}
