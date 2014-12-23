@@ -61,6 +61,16 @@ text-indent: -666em;
 	height:55px;
 	margin:0 19%;
 }
+
+.menu li a.next {
+	position: absolute;
+	right: 0px;
+}
+
+.menu li a.disabled {
+	background: #A3A2A0;
+}
+
 .menu ul li a {
 	display:block;
 	text-align:center;
@@ -249,6 +259,9 @@ background:#dbd520;
 background:#914814;
 }
 
+.panel ul li.disabled {
+background:#A3A2A0;
+}
 
 .modal {
     display:    none;

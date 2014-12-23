@@ -15,14 +15,16 @@
 		var handle;
 		$('.map').hide();
 		$('.panel').hide();
-		$('.prev').hide();
 		$('.next').hide();
 		
 		//Akcja przycisku dalej
 		$('a.next').click(function(e) {		//set onclick callback
 			e.preventDefault();
-			if($(this).hasClass('disabled'))
+			if($(this).hasClass('disabled')) {
 				return;
+			}
+			$(this).addClass('disabled');
+			var _this = $(this);
 			$.ajax({
 				url: "PlayerMoveServlet",
 				type: 'GET',
@@ -30,8 +32,10 @@
 				dataType: 'json',
 				data: {x:"x"},
 				success: function(data) {		//call after successful call
-					if(data=="empty")
-						return;
+					if(data=="empty") {
+						_this.removeClass('disabled');
+						return;	
+					}
 					var temp=data.split("*");
 					
 					var array=temp[1].split("+");
@@ -88,7 +92,6 @@
 						var p1Score=temp[1];
 						var p2Score=temp[2];
 						$('.panel').fadeOut();
-						$('.menu a.prev').fadeOut();
 						$('.menu a.next').fadeOut();
 						var text;
 						if(winner==-1)
@@ -99,6 +102,7 @@
 								'</h1><h1 style="color:#48add8;font-size:19px;">Gracz 1 uzyskał '+(p1Score)+' pól</h1>'+
 								'</h1><h1 style="color:#d75eb6;font-size:19px;">Gracz 2 uzyskał '+(p2Score)+' pól</h1></div>');
 					}
+					_this.removeClass('disabled');
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
 				 	alert(xhr.status);
@@ -192,7 +196,6 @@
 				    $('.options').fadeOut();
 				    $('.map').fadeIn();
 					$('.panel').fadeIn();
-					$('.prev').fadeIn();
 					$('.next').fadeIn();
 					
 				   
@@ -207,10 +210,11 @@
 		//Akcja przycisku z kolorem
 		$('.panel').on( 'click','li',function(e) {		//set onclick callback
 				e.preventDefault();
-				if($(this).hasClass('disabled'))
+				if($('.panel li').hasClass('disabled'))
 					return;
-				
 				var chosenColor = $(this).attr('class').toUpperCase();
+				$('.panel li').addClass('disabled');
+				var _this = this;
 					$.ajax({
 						url: "PlayerMoveServlet",
 						type: 'GET',
@@ -218,8 +222,10 @@
 						dataType: 'json',
 						data: { color: chosenColor },
 						success: function(data) {		//call after successful call
-							if(data=="empty")
-								return;
+							if(data=="empty") {
+								$('.panel li').removeClass('disabled');
+								return;	
+							}
 						
 							var temp=data.split("*");
 
@@ -277,7 +283,6 @@
 								var p1Score=temp[1];
 								var p2Score=temp[2];
 								$('.panel').fadeOut();
-								$('.menu a.prev').fadeOut();
 								$('.menu a.next').fadeOut();
 								var text;
 								if(winner==-1)
@@ -288,6 +293,7 @@
 										'</h1><h1 style="color:#48add8;font-size:19px;">Gracz 1 uzyskał '+(p1Score)+' pól</h1>'+
 										'</h1><h1 style="color:#d75eb6;font-size:19px;">Gracz 2 uzyskał '+(p2Score)+' pól</h1></div>');
 							}
+							$('.panel li').removeClass('disabled');
 						},
 						error: function (xhr, ajaxOptions, thrownError) {
 						 	alert(xhr.status);
@@ -311,7 +317,6 @@
 		<div class="menu">
 			<ul>
 				<li><a class="quit" href="index.html">Wyjście z gry</a></li>
-				<li><a class="prev">Wstecz</a></li>
 				<li><a class="next">Dalej</a></li>
 			</ul>
 		</div>
