@@ -107,8 +107,10 @@ public class DefaultGameTable implements GameTable {
 		if (noOfMoves > historicalTables.size()) {
 			throw new RuntimeException("undoHypothethicalMove: request for non-existing historical table");
 		}
-		historicalTakenFields.remove(historicalTakenFields.size() - 1);
-		historicalTables.remove(historicalTables.size() - 1);
+		for (int i = 0; i < noOfMoves; i++) {
+			historicalTakenFields.remove(historicalTakenFields.size() - 1);
+			historicalTables.remove(historicalTables.size() - 1);
+		}
 	}
 
 	@Override
@@ -152,7 +154,7 @@ public class DefaultGameTable implements GameTable {
 	}
 	
 	private ColorGroup getProperGroup(ColorGroup[][] groups, int posY, int posX,
-			List<ColorGroup> colorGroups, Set<ColorGroup> firstPlayerGroups,
+			 Set<ColorGroup> firstPlayerGroups,
 			Set<ColorGroup> secondPlayerGroups) {
 		
 		ColorGroup neighborGroup = null;
@@ -268,7 +270,7 @@ public class DefaultGameTable implements GameTable {
 					}
 				}
 				else {
-					groups[i][j] = getProperGroup(groups, i, j, colorGroups, firstPlayerGroups,
+					groups[i][j] = getProperGroup(groups, i, j, firstPlayerGroups,
 							secondPlayerGroups);
 						//System.out.println("Field " + i + " " + j + " was assigned to group " +
 							//groups[i][j].getUid());
@@ -357,7 +359,7 @@ public class DefaultGameTable implements GameTable {
 						break;
 					}
 					pointToCheck = mainPosition + 1;
-					if (pointToCheck % table_width == table_width) {
+					if (pointToCheck % table_width == 0) {
 						break;
 					}
 					isLeftDir = false;
@@ -386,7 +388,7 @@ public class DefaultGameTable implements GameTable {
 					}
 				} else {
 					pointToCheck = pointToCheck + 1;
-					if (pointToCheck % table_width == table_width) {
+					if (pointToCheck % table_width == 0) {
 						break;
 					}
 				}
@@ -402,6 +404,7 @@ public class DefaultGameTable implements GameTable {
 		}
 	}
 	
+	@Deprecated
 	protected Set<Integer> oldFillNewColor(Map<Integer, Colors> tableMap, Integer originPosition, Colors color) {
 		final Colors originColor = tableMap.get(originPosition);
 		
