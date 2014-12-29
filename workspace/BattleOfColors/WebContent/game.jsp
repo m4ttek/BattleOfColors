@@ -80,7 +80,7 @@
 						$('.menu a.next').css("background-color","#A3A2A0");
 						$('.menu a.next').addClass('disabled');
 					}
-				    else if(playerType=="AI_MIN_MAX"){
+				    else if(playerType=="AI_MIN_MAX" || playerType=="AI_ALFA_BETA"){
 						$('.panel li').css("background-color","#A3A2A0");
 						$('.panel li').addClass('disabled');
 					}
@@ -102,7 +102,7 @@
 								'</h1><h1 style="color:#48add8;font-size:19px;">Gracz 1 uzyskał '+(p1Score)+' pól</h1>'+
 								'</h1><h1 style="color:#d75eb6;font-size:19px;">Gracz 2 uzyskał '+(p2Score)+' pól</h1></div>');
 					}
-					_this.removeClass('disabled');
+				    _this.removeClass('disabled');
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
 				 	alert(xhr.status);
@@ -181,7 +181,7 @@
 				    		 $('.map').append('<div id="'+(i*width+j)+'" class="square '+(colors[i][j].toLowerCase())+'" style="left:'+((500*j)/width)+'px;top:'+((500*i)/height)+'px;"></div>');
 					    }
 				    }
-				    if(playerType=="AI_MIN_MAX"){
+				    if(playerType=="AI_MIN_MAX" || playerType=="AI_ALFA_BETA"){
 						$('.panel ul li').css("background-color","#A3A2A0");
 						$('.panel li').addClass('disabled');
 					}
@@ -269,7 +269,7 @@
 						    $('.square').css('width',(500/width)+'px');
 						    $('.square').css('height',(500/height)+'px');
 						    
-						    if(playerType=="AI_MIN_MAX"){
+						    if(playerType=="AI_MIN_MAX" || playerType=="AI_ALFA_BETA"){
 								$('.panel li').css("background-color","#A3A2A0");
 								$('.panel li').addClass('disabled');
 								$('.menu a.next').removeClass('disabled');
@@ -293,7 +293,7 @@
 										'</h1><h1 style="color:#48add8;font-size:19px;">Gracz 1 uzyskał '+(p1Score)+' pól</h1>'+
 										'</h1><h1 style="color:#d75eb6;font-size:19px;">Gracz 2 uzyskał '+(p2Score)+' pól</h1></div>');
 							}
-							$('.panel li').removeClass('disabled');
+						    $('.panel li').removeClass('disabled');
 						},
 						error: function (xhr, ajaxOptions, thrownError) {
 						 	alert(xhr.status);
@@ -329,6 +329,7 @@
 					<select name="player1">
 						<option value="HUMAN">Człowiek</option>
 						<option value="AI_MIN_MAX">AI MINI-MAX</option>
+						<option value="AI_ALFA_BETA">AI ALFA-BETA</option>
 					</select>
 				</div>
 				<h1>Gracz 2</h1>
@@ -336,6 +337,7 @@
 					<select name="player2">
 						<option value="HUMAN">Człowiek</option>
 						<option value="AI_MIN_MAX">AI MINI-MAX</option>
+						<option value="AI_ALFA_BETA">AI ALFA-BETA</option>
 					</select>
 				</div>
 				<h1>Poziom AI 1</h1>

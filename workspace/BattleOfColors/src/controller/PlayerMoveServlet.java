@@ -58,9 +58,11 @@ public class PlayerMoveServlet extends HttpServlet {
 			}
 			gameState.setGameAction(GameAction.PLAY);
 			
-			if(PlayerType.valueOf(request.getParameter("player1")).equals(PlayerType.AI_MIN_MAX))
+			if(PlayerType.valueOf(request.getParameter("player1")).equals(PlayerType.AI_MIN_MAX) 
+					|| PlayerType.valueOf(request.getParameter("player1")).equals(PlayerType.AI_ALFA_BETA))
 				gameState.setPlayerDifficultyLevel(0, Integer.parseInt(request.getParameter("level1")));
-			if(PlayerType.valueOf(request.getParameter("player2")).equals(PlayerType.AI_MIN_MAX))
+			if(PlayerType.valueOf(request.getParameter("player2")).equals(PlayerType.AI_MIN_MAX)
+					|| PlayerType.valueOf(request.getParameter("player2")).equals(PlayerType.AI_ALFA_BETA))
 				gameState.setPlayerDifficultyLevel(1, Integer.parseInt(request.getParameter("level2")));
 
 			if(((PlayerType.valueOf(request.getParameter("player1"))).equals(PlayerType.HUMAN) ||
@@ -114,7 +116,7 @@ public class PlayerMoveServlet extends HttpServlet {
 			String chosenColor;
 			boolean makeAiMove = false;
 			
-			if(gameState.getCurrentPlayerType().equals(PlayerType.AI_MIN_MAX))
+			if(gameState.getCurrentPlayerType().equals(PlayerType.AI_MIN_MAX) || gameState.getCurrentPlayerType().equals(PlayerType.AI_ALFA_BETA))
 				chosenColor=null;
 			else
 				chosenColor = request.getParameter("color");

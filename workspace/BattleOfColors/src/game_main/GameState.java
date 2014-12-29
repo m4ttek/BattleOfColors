@@ -1,6 +1,7 @@
 package game_main;
 
 import game_player.AIPlayer;
+import game_player.AIPlayerAlfaBeta;
 import game_player.AIPlayerMinMax;
 import game_player.DefaultPlayer;
 import game_player.Player;
@@ -57,7 +58,16 @@ public class GameState {
 				else {
 					listOfPlayers.add(new AIPlayerMinMax(gameTable, playerPos, this, playerNo-1, 4));
 				}
-			} else if (playerType.equals(PlayerType.HUMAN)) {
+			} 
+			else if (playerType.equals(PlayerType.AI_ALFA_BETA)) {
+				if(listOfPlayers.isEmpty()) {
+					listOfPlayers.add(new AIPlayerAlfaBeta(gameTable, playerPos, this, playerNo+1, 4));
+				}
+				else {
+					listOfPlayers.add(new AIPlayerAlfaBeta(gameTable, playerPos, this, playerNo-1, 4));
+				}
+			}
+			else if (playerType.equals(PlayerType.HUMAN)) {
 				listOfPlayers.add(new DefaultPlayer(gameTable, playerPos));
 			}
 			playerNo++;
@@ -211,6 +221,9 @@ public class GameState {
 	public PlayerType getCurrentPlayerType() {
 		if(currentPlayer instanceof AIPlayerMinMax){
 			return PlayerType.AI_MIN_MAX;
+		}
+		else if(currentPlayer instanceof AIPlayerAlfaBeta){
+			return PlayerType.AI_ALFA_BETA;
 		}
 		else
 			return PlayerType.HUMAN;

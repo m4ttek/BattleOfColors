@@ -28,12 +28,14 @@
 					<div class="sel">
 						<select name="player1">
 							<option value="AI_MIN_MAX">AI MINI-MAX</option>
+							<option value="AI_ALFA_BETA">AI ALFA-BETA</option>
 						</select>
 					</div>
 					<h1>Gracz 2</h1>
 					<div class="sel">
 						<select name="player2">
 							<option value="AI_MIN_MAX">AI MINI-MAX</option>
+							<option value="AI_ALFA_BETA">AI ALFA-BETA</option>
 						</select>
 					</div>
 					<h1>Poziom AI 1</h1>
