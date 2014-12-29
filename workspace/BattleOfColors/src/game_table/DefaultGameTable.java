@@ -381,7 +381,7 @@ public class DefaultGameTable implements GameTable {
 				
 				if (isLeftDir) {
 					pointToCheck = pointToCheck - 1;
-					if (pointToCheck % table_width < 0) {
+					if (pointToCheck % table_width == table_width - 1) {
 						isLeftDir = false;
 						pointToCheck = mainPosition + 1;
 						onNewFields = onAlsoRightNewFields;
