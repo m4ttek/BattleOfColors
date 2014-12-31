@@ -42,11 +42,11 @@ public class AlfaBetaVsAlfaBetaStatisticalOperation implements StatisticalOperat
 	private Long secondPlayerMeanMoveTime = 0L;
 	
 	public AlfaBetaVsAlfaBetaStatisticalOperation(int mapSize, int firstPlayerDifficultyLevel,
-			int secondPlayerDifficultyLevel) {
+			int secondPlayerDifficultyLevel, int startingPlayer) {
 		List<PlayerType> players = new ArrayList<PlayerType>();
 		players.add(PlayerType.AI_ALFA_BETA);
 		players.add(PlayerType.AI_ALFA_BETA);
-		gameState = GameState.restartGame(players, mapSize);
+		gameState = GameState.restartGame(players, mapSize, startingPlayer);
 		gameState.setPlayerDifficultyLevel(0, firstPlayerDifficultyLevel);
 		gameState.setPlayerDifficultyLevel(1, secondPlayerDifficultyLevel);
 	}

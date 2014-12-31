@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Klasa zawierająca stan gry i możliwe operacje.
@@ -24,6 +25,12 @@ import java.util.Map;
  * @author Mateusz Kamiński
  */
 public class GameState {
+	
+	private static int playerOneStarts= 0, playerTwoStarts = 0;
+	
+	static Logger log = Logger.getLogger("GameState");
+	
+	private static final int DEFAULT_STARTING_PLAYER = 1;
 	
 	private GameAction gameAction=GameAction.LOAD;
 	
@@ -41,7 +48,7 @@ public class GameState {
 
 	private boolean restart=false;
 	
-	private GameState(List<PlayerType> players,int size) {
+	private GameState(List<PlayerType> players,int size, int startingPlayer) {
 		gameTable = new DefaultGameTable(null,size);
 		listOfPlayers = new ArrayList<Player>();
 		
@@ -72,8 +79,15 @@ public class GameState {
 			}
 			playerNo++;
 		}
-		currentPlayer = listOfPlayers.get(playerIdx++);
-		turn=1;
+		currentPlayer = listOfPlayers.get(startingPlayer-1);
+		playerIdx = startingPlayer%2;
+		turn=startingPlayer;
+		if(currentPlayer.getPlayerId() == 0) {
+			playerOneStarts++;
+		}
+		else {
+			playerTwoStarts++;
+		}
 	}
 	
 	public void setPlayerDifficultyLevel(int playerId, int level) {
@@ -88,17 +102,25 @@ public class GameState {
 	}
 	
 	public static GameState startGame(List<PlayerType> playerTypeList,int size) {
+		return startGame(playerTypeList, size, DEFAULT_STARTING_PLAYER);
+	}
+	
+	public static GameState startGame(List<PlayerType> playerTypeList,int size, int startingPlayer) {
 		/*if (gameState == null) {
 			gameState = new GameState(playerTypeList,size);
 		}
 		return gameState;*/
 		DefaultPlayer.reset();
-		return new GameState(playerTypeList,size);
+		return new GameState(playerTypeList,size, startingPlayer);
 	}
 	
 	public static GameState restartGame(List<PlayerType> playerTypeList,int size) {
+		return restartGame(playerTypeList, size, DEFAULT_STARTING_PLAYER);
+	}
+	
+	public static GameState restartGame(List<PlayerType> playerTypeList,int size, int startingPlayer) {
 		//gameState = null;
-		return GameState.startGame(playerTypeList,size);
+		return GameState.startGame(playerTypeList,size, startingPlayer);
 	}
 	
 	public void makeNextMove(String moveParameters) throws IncorrectColorException {
@@ -133,7 +155,6 @@ public class GameState {
 	
 	public boolean isGameFinished() {
 		int fieldSum = 0;
-		
 		// Na początku wykonujemy proste sprawdzenie czy suma pól zajętych przez graczy równa się rozmiarowi stołu.
 		for (Player player : listOfPlayers) {
 			fieldSum += player.getNumberOfFieldsTakenByPlayer();

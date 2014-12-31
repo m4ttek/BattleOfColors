@@ -14,6 +14,7 @@ public class OperationConfig {
 	private int level1;
 	private int level2;
 	private int size;
+	private int startingPlayer;
 	
 	public OperationConfig(PlayerType player1, PlayerType player2, int level1,
 			int level2, int size) {
@@ -23,6 +24,7 @@ public class OperationConfig {
 		this.setLevel1(level1);
 		this.setLevel2(level2);
 		this.setSize(size);
+		this.setStartingPlayer(1);
 	}
 
 	public PlayerType getPlayerType1() {
@@ -65,6 +67,14 @@ public class OperationConfig {
 		this.size = size;
 	}
 	
+	public int getStartingPlayer() {
+		return startingPlayer;
+	}
+
+	public void setStartingPlayer(int startingPlayer) {
+		this.startingPlayer = startingPlayer;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();

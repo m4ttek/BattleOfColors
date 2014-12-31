@@ -18,7 +18,7 @@ public class StatisticsFakeServlet {
 		StatisticsPerformer performer = StatisticsPerformer.getPerfomer();
 		int numberOfGamesToBePlayer = 1000;
 		for (int i = 0; i < numberOfGamesToBePlayer; i++) {
-			performer.addStatisticalOperation(new MinMaxVSMinMaxStatisticalOperation(15, 1, 3));
+			performer.addStatisticalOperation(new MinMaxVSMinMaxStatisticalOperation(15, 1, 3, 1));
 		}
 		try {
 			performer.runAllStatisticalOperations();

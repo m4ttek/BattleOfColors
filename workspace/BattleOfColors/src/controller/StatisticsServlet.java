@@ -148,6 +148,7 @@ public class StatisticsServlet extends HttpServlet {
 					.getStatisticalOperationFactory();
 			OperationConfig config = prepareConfiguration();
 			for (int i = 0; i < numberOfGames; i++) {
+				config.setStartingPlayer(1+i%2);
 				performer.addStatisticalOperation(statisticalOperationFactory
 						.produce(config));
 			}

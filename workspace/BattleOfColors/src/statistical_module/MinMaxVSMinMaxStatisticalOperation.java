@@ -41,14 +41,17 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 	
 	private Long secondPlayerMeanMoveTime = 0L;
 	
+	private int startingPlayer;
+	
 	public MinMaxVSMinMaxStatisticalOperation(int mapSize, int firstPlayerDifficultyLevel,
-			int secondPlayerDifficultyLevel) {
+			int secondPlayerDifficultyLevel, int startingPlayer) {
 		List<PlayerType> players = new ArrayList<PlayerType>();
 		players.add(PlayerType.AI_MIN_MAX);
 		players.add(PlayerType.AI_MIN_MAX);
-		gameState = GameState.restartGame(players, mapSize);
+		gameState = GameState.restartGame(players, mapSize, startingPlayer);
 		gameState.setPlayerDifficultyLevel(0, firstPlayerDifficultyLevel);
 		gameState.setPlayerDifficultyLevel(1, secondPlayerDifficultyLevel);
+		this.startingPlayer = startingPlayer;
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class MinMaxVSMinMaxStatisticalOperation implements StatisticalOperation 
 		
 		long moveStartTime;
 		long moveEndTime;
-		boolean firstPlayerMove = true;
+		boolean firstPlayerMove = (startingPlayer == 1 ? true : false);
 		while(!gameState.isGameFinished()) {
 			moveStartTime = System.nanoTime();
 			gameState.makeNextMove(null);

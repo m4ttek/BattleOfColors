@@ -42,11 +42,17 @@ public class AlfaBetaVsMinMaxStatisticalOperation implements StatisticalOperatio
 	private Long secondPlayerMeanMoveTime = 0L;
 	
 	public AlfaBetaVsMinMaxStatisticalOperation(int mapSize, int firstPlayerDifficultyLevel,
-			int secondPlayerDifficultyLevel) {
+			int secondPlayerDifficultyLevel, boolean alfaBetaFirst, int startingPlayer) {
 		List<PlayerType> players = new ArrayList<PlayerType>();
-		players.add(PlayerType.AI_ALFA_BETA);
-		players.add(PlayerType.AI_MIN_MAX);
-		gameState = GameState.restartGame(players, mapSize);
+		if(alfaBetaFirst) {
+			players.add(PlayerType.AI_ALFA_BETA);
+			players.add(PlayerType.AI_MIN_MAX);
+		}
+		else {
+			players.add(PlayerType.AI_MIN_MAX);
+			players.add(PlayerType.AI_ALFA_BETA);
+		}
+		gameState = GameState.restartGame(players, mapSize, startingPlayer);
 		gameState.setPlayerDifficultyLevel(0, firstPlayerDifficultyLevel);
 		gameState.setPlayerDifficultyLevel(1, secondPlayerDifficultyLevel);
 	}
