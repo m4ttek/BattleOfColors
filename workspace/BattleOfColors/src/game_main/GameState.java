@@ -26,8 +26,6 @@ import java.util.logging.Logger;
  */
 public class GameState {
 	
-	private static int playerOneStarts= 0, playerTwoStarts = 0;
-	
 	static Logger log = Logger.getLogger("GameState");
 	
 	private static final int DEFAULT_STARTING_PLAYER = 1;
@@ -82,19 +80,26 @@ public class GameState {
 		currentPlayer = listOfPlayers.get(startingPlayer-1);
 		playerIdx = startingPlayer%2;
 		turn=startingPlayer;
-		if(currentPlayer.getPlayerId() == 0) {
-			playerOneStarts++;
-		}
-		else {
-			playerTwoStarts++;
-		}
 	}
 	
 	public void setPlayerDifficultyLevel(int playerId, int level) {
 		for(Player player : listOfPlayers) {
 			if(player.getPlayerId() == playerId) {
 				if(player instanceof AIPlayer) {
-					((AIPlayer) player).setDifficultyLevel(2*level);
+					int playerLevel;
+					if(level == 1) {
+						playerLevel = 1;
+					}
+					else if(level == 2) {
+						playerLevel = 2;
+					}
+					else if(level == 3) {
+						playerLevel = 4;
+					}
+					else {
+						playerLevel = 6;
+					}
+					((AIPlayer) player).setDifficultyLevel(playerLevel);
 				}
 				return;
 			}

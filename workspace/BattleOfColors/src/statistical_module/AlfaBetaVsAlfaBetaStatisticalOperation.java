@@ -41,6 +41,8 @@ public class AlfaBetaVsAlfaBetaStatisticalOperation implements StatisticalOperat
 	
 	private Long secondPlayerMeanMoveTime = 0L;
 	
+	private Integer startingPlayer;
+	
 	public AlfaBetaVsAlfaBetaStatisticalOperation(int mapSize, int firstPlayerDifficultyLevel,
 			int secondPlayerDifficultyLevel, int startingPlayer) {
 		List<PlayerType> players = new ArrayList<PlayerType>();
@@ -49,6 +51,7 @@ public class AlfaBetaVsAlfaBetaStatisticalOperation implements StatisticalOperat
 		gameState = GameState.restartGame(players, mapSize, startingPlayer);
 		gameState.setPlayerDifficultyLevel(0, firstPlayerDifficultyLevel);
 		gameState.setPlayerDifficultyLevel(1, secondPlayerDifficultyLevel);
+		this.startingPlayer = startingPlayer;
 	}
 
 	@Override
@@ -97,10 +100,18 @@ public class AlfaBetaVsAlfaBetaStatisticalOperation implements StatisticalOperat
 		resultMap.put("meanMoveTime", meanMoveTime.toString());
 		resultMap.put("fastestMove", Collections.min(moveRunningTimes).toString());
 		resultMap.put("slowestMove", Collections.max(moveRunningTimes).toString());
-		resultMap.put("firstPlayerMeanMoveTime", String.valueOf(((double) firstPlayerMeanMoveTime / firstPlayerMoveRunningTimes.size())));
-		resultMap.put("secondPlayerMeanMoveTime", String.valueOf(((double) secondPlayerMeanMoveTime / secondPlayerMoveRunningTimes.size())));
-		resultMap.put("firstPlayerMoveTimes", firstPlayerMoveRunningTimes.toString());
-		resultMap.put("secondPlayerMoveTimes", secondPlayerMoveRunningTimes.toString());
+		if(startingPlayer == 1) {
+			resultMap.put("firstPlayerMeanMoveTime", String.valueOf(((double) firstPlayerMeanMoveTime / firstPlayerMoveRunningTimes.size())));
+			resultMap.put("secondPlayerMeanMoveTime", String.valueOf(((double) secondPlayerMeanMoveTime / secondPlayerMoveRunningTimes.size())));
+			resultMap.put("firstPlayerMoveTimes", firstPlayerMoveRunningTimes.toString());
+			resultMap.put("secondPlayerMoveTimes", secondPlayerMoveRunningTimes.toString());
+		}
+		else {
+			resultMap.put("secondPlayerMeanMoveTime", String.valueOf(((double) firstPlayerMeanMoveTime / firstPlayerMoveRunningTimes.size())));
+			resultMap.put("firstPlayerMeanMoveTime", String.valueOf(((double) secondPlayerMeanMoveTime / secondPlayerMoveRunningTimes.size())));
+			resultMap.put("secondPlayerMoveTimes", firstPlayerMoveRunningTimes.toString());
+			resultMap.put("firstPlayerMoveTimes", secondPlayerMoveRunningTimes.toString());
+		}
 		return resultMap;
 	}
 
