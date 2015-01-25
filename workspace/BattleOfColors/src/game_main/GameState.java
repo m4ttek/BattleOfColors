@@ -210,12 +210,16 @@ public class GameState {
 	 */
 	public Integer getWinner() {
 		if (isGameFinished()) {
-			int maxFields = 0;
+			int maxFields = -1;
 			Player playerToWin = null;
 			for (Player player : listOfPlayers) {
 				if (player.getNumberOfFieldsTakenByPlayer() > maxFields) {
 					maxFields = player.getNumberOfFieldsTakenByPlayer();
 					playerToWin = player; 
+				}
+				else if(player.getNumberOfFieldsTakenByPlayer() == maxFields) {
+					//draw
+					return -1;
 				}
 			}
 			return listOfPlayers.indexOf(playerToWin);

@@ -170,7 +170,7 @@ public class StatisticsServlet extends HttpServlet {
 			int operationNumber = 0;
 			int player1wins = 0;
 			int player2wins = 0;
-			int wholeMoveTime = 0;
+			double wholeMoveTime = 0.0;
 			int wholeNumberOfMoves = 0;
 			long wholeGameTime = 0;
 			
@@ -191,21 +191,19 @@ public class StatisticsServlet extends HttpServlet {
 				String winnerId = operationResult.get("winner");
 				String meanMoveTime = operationResult.get("meanMoveTime");
 				String numberOfOverallMoves = operationResult.get("overallMoves");
-				String firstPlayerMoveTimes = operationResult.get("firstPlayerMoveTimes");
-				String secondPlayerMoveTimes = operationResult.get("secondPlayerMoveTimes");
 				if (winnerId.equals("0")) {
 					player1wins++;
-				} else {
+				} else if(winnerId.equals("1")){
 					player2wins++;
 				}
 				try {
-					wholeMoveTime += Integer.valueOf(meanMoveTime);
+					wholeMoveTime += Double.valueOf(meanMoveTime) / numberOfGames;
 					wholeNumberOfMoves += Integer.valueOf(numberOfOverallMoves);
 				} catch (NumberFormatException exception) {
 					logger.log(Level.WARNING, "Rzutowanie na liczbę nie powiodło się.");
 					return;
 				}
-				wholeGameTime += statisticalOperation.getRunningTime();
+				wholeGameTime += statisticalOperation.getRunningTime()/1000000;
 				operationNumber++;
 				gamesResults.put(operationNumber, operationResult);
 			}
@@ -215,7 +213,7 @@ public class StatisticsServlet extends HttpServlet {
 				overallGameStatistics.put("player1wins", String.valueOf(player1wins));
 				overallGameStatistics.put("player2wins", String.valueOf(player2wins));
 				overallGameStatistics.put("wholeGameTime", String.valueOf(wholeGameTime));
-				overallGameStatistics.put("wholeMeanMoveTime", String.valueOf((double) wholeMoveTime/ numberOfGames));
+				overallGameStatistics.put("wholeMeanMoveTime", String.valueOf(wholeMoveTime));
 				overallGameStatistics.put("wholeMeanNumberOfMoves", String.valueOf((double) wholeNumberOfMoves/ numberOfGames));
 			}
 			gamesResults.put(0, overallGameStatistics);

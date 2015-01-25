@@ -85,7 +85,7 @@ function handleResponse(response) {
 		
 		drawHighcharts();
 		//$('#overall').html(dataOverall.player1wins + " " + dataOverall.player2wins + " " + dataOverall.wholeMeanMoveTime + " " + dataOverall.wholeGameTime);
-		$('#whole_time').html(parseFloat(dataOverall.wholeGameTime) / 1000000000 + ' s');
+		$('#whole_time').html(parseFloat(dataOverall.wholeGameTime) / 1000 + ' s');
 		$('#move_mean_whole_time').html((parseFloat(dataOverall.wholeMeanMoveTime) / 1000000).toFixed(3) + ' ms');
 		$('#mean_move_whole_number').html(parseFloat(dataOverall.wholeMeanNumberOfMoves).toFixed(0));
 		$('#first_player_wins').html(parseInt(dataOverall.player1wins));
