@@ -72,7 +72,7 @@ public class StatisticsServlet extends HttpServlet {
 	/**
 	 * Maksymalny czas życia asynchronicznego kontekstu.
 	 */
-	private static final long ASYNC_CONTEXT_LIVE_TIME = 10 * 60 * 1000;
+	private static final long ASYNC_CONTEXT_LIVE_TIME = 1000 * 60 * 1000;
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
