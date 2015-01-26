@@ -49,6 +49,7 @@ public class AIPlayerAlfaBeta extends AIPlayer {
 		for(Colors color : availableColors) {
 			int moveValue = alfaBetaEvaluateMove(color, 0, availableColors, 0, 0, currentPlayerColor,
 					opponentsColor,Integer.MIN_VALUE,Integer.MAX_VALUE);
+			
 			if(moveValue > bestResult) {
 				bestChoice = color;
 				bestResult = moveValue;
@@ -100,15 +101,16 @@ public class AIPlayerAlfaBeta extends AIPlayer {
 				int currentPoints = alfaBetaEvaluateMove(currentTryColor,
 						movesMade+1, nextAvailableColors, ourPoints, opponentsPoints, tryColor, opponentsCurrentColor,
 						alfa,beta);
-				if(currentPoints>alfa)
-					alfa=currentPoints;
+				if(currentPoints<beta)
+					beta=currentPoints;
 				if(alfa>=beta){
 					gameTable.undoHypotheticalMove(1);
-					return beta;
+					return alfa;
 				}
+			
 			}
 			gameTable.undoHypotheticalMove(1);
-			return alfa;
+			return beta;
 		}
 		else {
 			//opponent's turn
@@ -127,15 +129,16 @@ public class AIPlayerAlfaBeta extends AIPlayer {
 				int currentPoints = alfaBetaEvaluateMove(currentTryColor,
 						movesMade+1, nextAvailableColors, ourPoints, opponentsPoints, currentColor, tryColor,
 						alfa,beta);
-				if(currentPoints<beta)
-					beta=currentPoints;
+				
+				if(currentPoints>alfa)
+					alfa=currentPoints;
 				if(alfa>=beta){
 					gameTable.undoHypotheticalMove(1);
-					return alfa;
+					return beta;
 				}
 			}	
 			gameTable.undoHypotheticalMove(1);
-			return beta;
+			return alfa;
 		}
 	}
 	
